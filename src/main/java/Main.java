@@ -8,7 +8,7 @@ public class Main {
         cfg.height = 480;
         cfg.width = 800;
         cfg.forceExit = false;
-
+        //test
         new LwjglApplication(new Game(), cfg);
     }
 }
