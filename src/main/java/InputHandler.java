@@ -1,32 +1,32 @@
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
+import java.util.ArrayList;
+
 public class InputHandler {
 
-    public static boolean UP_TOUCHED;
-    public static boolean DOWN_TOUCHED;
-    public static boolean LEFT_TOUCHED;
-    public static boolean RIGHT_TOUCHED;
+    public static ArrayList<Integer> keysPressed = new ArrayList<>();
 
     public void update() {
-        // reset all variables
-        UP_TOUCHED = false;
-        DOWN_TOUCHED = false;
-        LEFT_TOUCHED = false;
-        RIGHT_TOUCHED = false;
+        // reset all pressed keys
+        keysPressed.clear();
 
-        // set boolean to true if key is touched
+        // add to list if key is touched
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-            LEFT_TOUCHED = true;
+            keysPressed.add(Keys.LEFT);
         }
         if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-            DOWN_TOUCHED = true;
+            keysPressed.add(Keys.DOWN);
         }
         if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-            RIGHT_TOUCHED = true;
+            keysPressed.add(Keys.RIGHT);
         }
         if (Gdx.input.isKeyPressed(Keys.UP)) {
-            UP_TOUCHED = true;
+            keysPressed.add(Keys.UP);
         }
+    }
+
+    public static boolean isPressed(int key) {
+        return keysPressed.contains(key);
     }
 }
