@@ -21,7 +21,6 @@ public class Game extends ApplicationAdapter {
         cam = new OrthographicCamera();
         cam.setToOrtho(false, Config.VIEWPORT_WIDTH, Config.VIEWPORT_HEIGHT);
         sb = new SpriteBatch();
-        sb.setProjectionMatrix(cam.combined);
         //load tilemap
         tileMap = new TmxMapLoader().load("level1.tmx");
         tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
@@ -39,15 +38,17 @@ public class Game extends ApplicationAdapter {
         inputHandler.update();
         player.update(delta);
 
+        //update camera position
+        sb.setProjectionMatrix(cam.combined);
+        cam.position.x = player.getX();
+        cam.position.y = player.getY();
+        cam.update();
+
         //render
         tileMapRenderer.setView(cam);
         tileMapRenderer.render();
         sb.begin();
         player.render(sb);
         sb.end();
-
-        //update camera position
-        cam.translate(10 * delta, 0, 0);
-        cam.update();
     }
 }

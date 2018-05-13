@@ -48,4 +48,12 @@ public class Player {
         ship_up = new Texture("ship_up.png");
         ship_down = new Texture("ship_down.png");
     }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
 }
