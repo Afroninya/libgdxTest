@@ -5,8 +5,8 @@ public class Main {
     public static void main(String[] args) {
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         cfg.title = "test";
-        cfg.height = 480;
-        cfg.width = 800;
+        cfg.width = Config.V_WIDTH;
+        cfg.height = Config.V_HEIGHT;
         cfg.forceExit = false;
         //test
         new LwjglApplication(new Game(), cfg);
