@@ -10,7 +10,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import config.Config;
-import config.PathProvider;
+import config.ConfigValueProvider;
 import entities.Player;
 
 public class Game extends ApplicationAdapter {
@@ -30,12 +30,12 @@ public class Game extends ApplicationAdapter {
         sb = new SpriteBatch();
 
         //load tilemap
-        tileMap = new TmxMapLoader().load(PathProvider.LEVEL1 + "level1.tmx");
+        tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
         tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
 
 
         //load collision map
-        collisionMap = new TmxMapLoader().load(PathProvider.LEVEL1 + "level1_collision.tmx");
+        collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
         collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
         collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get(
                 "Tile Layer 1");
@@ -66,6 +66,7 @@ public class Game extends ApplicationAdapter {
         collisionMapRenderer.setView(cam);
         collisionMapRenderer.render();
         sb.begin();
+        Gdx.graphics.setTitle(""+Gdx.graphics.getFramesPerSecond());
         player.render(sb);
         sb.end();
     }

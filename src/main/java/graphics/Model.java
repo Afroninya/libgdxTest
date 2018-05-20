@@ -26,38 +26,38 @@ public class Model {
     private Map<String, Sprite> sprites;
 
 
+    // Constructors
+
+    public Model() {
+        this(null, null, 0, 0, 0);
+    }
+
+    public Model(String spriteSheet, String defaultSprite) {
+        this(spriteSheet, defaultSprite, 0, 0, 0);
+    }
+
+    public Model(String spriteSheet, String defaultSprite, float x, float y) {
+        this(spriteSheet, defaultSprite, x, y, 0);
+    }
+
+    public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation) {
+        this.x = x;
+        this.y = y;
+        initTextures(spriteSheet, defaultSprite, x, y);
+//        setRotation(rotation);
+    }
+
+
     // Methods
 
-    public void setPosition(float x, float y) {
-        setX(x);
-        setY(y);
-    }
-
-    public float getCenterX() {
-        return getCenter().get("x");
-    }
-
-    public float getCenterY() {
-        return getCenter().get("y");
-    }
-
-    public Map<String, Float> getCenter() {
-        HashMap<String, Float> hmap = new HashMap<String, Float>();
-        hmap.put("x", x + width/2);
-        hmap.put("y", y + height/2);
-        return hmap;
-    }
-
-    public void centerOnScreen() {
-        setPosition(Gdx.graphics.getWidth()/2 - width + width/2,
-                Gdx.graphics.getHeight()/2 - height + height/2);
-    }
-
-    public void rotate(float degrees) {
-        rotation += degrees;
-    }
-
-    private void initTextures(String spriteSheet, Enum defaultSprite, float x, float y) {
+    /**
+     * Load spritesheet and save sprites into a TextureAtlas
+     * @param spriteSheet spritesheet base name
+     * @param defaultSprite initially displayed sprite
+     * @param x X location
+     * @param y Y location
+     */
+    private void initTextures(String spriteSheet, String defaultSprite, float x, float y) {
         if (spriteSheet != null && spriteSheet.endsWith(".atlas")) {
             sprites = new HashMap<String, Sprite>();
             this.textureAtlas = new TextureAtlas(Gdx.files.internal(spriteSheet));
@@ -71,36 +71,39 @@ public class Model {
         }
     }
 
-    public <E extends Enum<E>> void setSprite(E sprite) {
-        this.currentSprite = sprites.get(sprite.toString());
+    /**
+     * Center the model on the current screen.
+     */
+    public void centerOnScreen() {
+        setPosition(Gdx.graphics.getWidth()/2 - width + width/2,
+                Gdx.graphics.getHeight()/2 - height + height/2);
     }
 
-    public void setSprite(String sprite) {
-        this.currentSprite = sprites.get(sprite);
-    }
-
-
-    // Constructors
-
-    public Model() {
-        this(null, null, 0, 0, 0);
-    }
-
-    public Model(String spriteSheet, Enum defaultSprite) {
-        this(spriteSheet, defaultSprite, 0, 0, 0);
-    }
-
-    public Model(String spriteSheet, Enum defaultSprite, float x, float y) {
-        this(spriteSheet, defaultSprite, x, y, 0);
-    }
-
-    public Model(String spriteSheet, Enum defaultSprite, float x, float y, float rotation) {
-        initTextures(spriteSheet, defaultSprite, x, y);
-        setRotation(rotation);
+    /**
+     * Rotate the model by specified amount.
+     * @param degrees rotation amount in degrees
+     */
+    public void rotate(float degrees) {
+        rotation += degrees;
     }
 
 
     // Getter
+
+    public Map<String, Float> getCenter() {
+        HashMap<String, Float> hmap = new HashMap<String, Float>();
+        hmap.put("x", x + width/2);
+        hmap.put("y", y + height/2);
+        return hmap;
+    }
+
+    public float getCenterX() {
+        return getCenter().get("x");
+    }
+
+    public float getCenterY() {
+        return getCenter().get("y");
+    }
 
     public float getX() {
         return x;
@@ -131,6 +134,20 @@ public class Model {
     }
 
     // Setter
+
+    public void setSprite(String sprite) {
+        this.currentSprite = sprites.get(sprite);
+    }
+
+    public void setSprite(String sprite, float x, float y) {
+        this.currentSprite = sprites.get(sprite);
+        setPosition(x, y);
+    }
+
+    public void setPosition(float x, float y) {
+        setX(x);
+        setY(y);
+    }
 
     public void setX(float x) {
         this.x = x;
