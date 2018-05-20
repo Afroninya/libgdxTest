@@ -3,6 +3,7 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import config.ConfigValueProvider;
 import entities.util.CommonSprites;
@@ -18,8 +19,8 @@ abstract public class Entity {
     protected String defaultSprite;
     protected Model model;
 
-    protected float length;
     protected float width;
+    protected float height;
 
     protected float x;
     protected float y;
@@ -34,7 +35,15 @@ abstract public class Entity {
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
+    //0 up, 1 left, 2 down, 3 right
+    private Direction direction = Direction.DOWN;
+
+    private enum Direction {
+        UP, LEFT, RIGHT, DOWN
+    }
+
     protected TiledMapTileLayer collisionLayer;
+    float stateTime;
 
 
     /**
@@ -48,14 +57,16 @@ abstract public class Entity {
      * Constructor.
      * Set attributes as specified in Subclass constructor call and initialize the Sprite.
      */
-    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y) {
+    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y, int width, int height) {
         this.x = x;
         this.y = y;
         this.isMoving = false;
         this.acceleration = acceleration;
         this.maxSpeed = maxSpeed;
+        this.width = width;
+        this.height = height;
 
-        initModel(x, y, spriteSheet, initialSprite);
+        initModel(x, y, spriteSheet, initialSprite, width, height);
     }
 
     /**
@@ -66,7 +77,7 @@ abstract public class Entity {
      * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
      * @param initialSprite the texture file name (e.g. "player_down")
      */
-    private void initModel(float x, float y, String spriteSheet, String initialSprite) {
+    private void initModel(float x, float y, String spriteSheet, String initialSprite, int width, int height) {
         if (spriteSheet == null) {
             final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             String className = stackTrace[3].getClassName().toLowerCase().split("\\.")[1];
@@ -82,7 +93,7 @@ abstract public class Entity {
             }
         } else {
             if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
-                this.defaultSprite = spriteSheet + CommonSprites.MIDDLE;
+                this.defaultSprite = spriteSheet + CommonSprites.DOWN;
             } else {
                 this.defaultSprite = initialSprite;
             }
@@ -92,7 +103,7 @@ abstract public class Entity {
 
         this.collisionLayer = Game.collisionLayer;
 
-        this.model = new Model(this.spriteSheet, defaultSprite, x, y);
+        this.model = new Model(this.spriteSheet, defaultSprite, x, y, 0, width, height);
     }
 
 
@@ -111,15 +122,19 @@ abstract public class Entity {
         if (isMoving) {
             if (isMovingRight && !isMovingLeft) {
                 moveRight();
+                direction = Direction.RIGHT;
             }
             if (isMovingLeft && !isMovingRight) {
                 moveLeft();
+                direction = Direction.LEFT;
             }
             if (isMovingUp && !isMovingDown) {
                 moveUp();
+                direction = Direction.UP;
             }
             if (isMovingDown && !isMovingUp) {
                 moveDown();
+                direction = Direction.DOWN;
             }
 
             if (speedX != 0 && (isMovingUp || isMovingDown)) {
@@ -147,7 +162,16 @@ abstract public class Entity {
      * @param sb the corresponding SpriteBatch
      */
     public void render(SpriteBatch sb) {
-        model.getSprite().draw(sb);
+        stateTime += Gdx.graphics.getDeltaTime();
+
+        // Get current frame of animation for the current stateTime
+        TextureRegion tr;
+        if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
+        else if (isMovingRight) tr = model.animations.get("right").getKeyFrame(stateTime, true);
+        else if (isMovingUp) tr = model.animations.get("up").getKeyFrame(stateTime, true);
+        else if (isMovingDown) tr = model.animations.get("down").getKeyFrame(stateTime, true);
+        else tr = model.animations.get(direction.name().toLowerCase()).getKeyFrame(2);
+        sb.draw(tr, x, y, width, height);
     }
 
 
@@ -159,7 +183,7 @@ abstract public class Entity {
         if (speedX > maxSpeed) {
             speedX = maxSpeed;
         }
-        setSprite(CommonSprites.MIDDLE);
+        setSprite(CommonSprites.RIGHT);
     }
 
     /**
@@ -170,7 +194,7 @@ abstract public class Entity {
         if (speedX < -maxSpeed) {
             speedX = -maxSpeed;
         }
-        setSprite(CommonSprites.MIDDLE);
+        setSprite(CommonSprites.LEFT);
     }
 
     /**
@@ -321,12 +345,12 @@ abstract public class Entity {
         this.model.setSprite(this.spriteBaseName + sprite.toString(), this.x, this.y);
     }
 
-    public float getLength() {
-        return length;
+    public float getHeight() {
+        return height;
     }
 
-    public void setLength(float length) {
-        this.length = length;
+    public void setHeight(float height) {
+        this.height = height;
     }
 
     public float getWidth() {

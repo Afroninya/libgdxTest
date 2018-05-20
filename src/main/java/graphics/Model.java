@@ -1,8 +1,10 @@
 package graphics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,42 +27,44 @@ public class Model {
     private TextureAtlas textureAtlas;
 
     private Map<String, Sprite> sprites;
+    public Map<String, Animation<TextureRegion>> animations;
 
 
     // Constructors
 
     public Model() {
-        this(null, null, 0, 0, 0);
+        this(null, null);
     }
 
     public Model(String spriteSheet, String defaultSprite) {
-        this(spriteSheet, defaultSprite, 0, 0, 0);
+        this(spriteSheet, defaultSprite, 0, 0);
     }
 
     public Model(String spriteSheet, String defaultSprite, float x, float y) {
-        this(spriteSheet, defaultSprite, x, y, 0);
+        this(spriteSheet, defaultSprite, x, y, 0, 16, 24);
     }
 
-    public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation) {
+    public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation, int width, int height) {
         this.x = x;
         this.y = y;
-        initTextures(spriteSheet, defaultSprite, x, y);
+        initTextures(spriteSheet, defaultSprite, x, y, width, height);
 //        setRotation(rotation);
     }
-
 
     // Methods
 
     /**
      * Load spritesheet and save sprites into a TextureAtlas
-     * @param spriteSheet spritesheet base name
+     *
+     * @param spriteSheet   spritesheet base name
      * @param defaultSprite initially displayed sprite
-     * @param x X location
-     * @param y Y location
+     * @param x             X location
+     * @param y             Y location
      */
-    private void initTextures(String spriteSheet, String defaultSprite, float x, float y) {
+    private void initTextures(String spriteSheet, String defaultSprite, float x, float y, int width, int height) {
         if (spriteSheet != null && spriteSheet.endsWith(".atlas")) {
             sprites = new HashMap<String, Sprite>();
+            animations = new HashMap<String, Animation<TextureRegion>>();
             this.textureAtlas = new TextureAtlas(Gdx.files.internal(spriteSheet));
 
             textureAtlas.getRegions().forEach(element -> {
@@ -68,6 +72,11 @@ public class Model {
                 tmpSprite.setPosition(x, y);
                 sprites.put(element.name, tmpSprite);
             });
+
+            animations.put("down", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_down"), Animation.PlayMode.LOOP));
+            animations.put("up", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
+            animations.put("left", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
+            animations.put("right", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
             setSprite(defaultSprite);
         }
     }
@@ -76,12 +85,13 @@ public class Model {
      * Center the model on the current screen.
      */
     public void centerOnScreen() {
-        setPosition(Gdx.graphics.getWidth()/2 - width + width/2,
-                Gdx.graphics.getHeight()/2 - height + height/2);
+        setPosition(Gdx.graphics.getWidth() / 2 - width + width / 2,
+                Gdx.graphics.getHeight() / 2 - height + height / 2);
     }
 
     /**
      * Rotate the model by specified amount.
+     *
      * @param degrees rotation amount in degrees
      */
     public void rotate(float degrees) {
@@ -93,8 +103,8 @@ public class Model {
 
     public Map<String, Float> getCenter() {
         HashMap<String, Float> hmap = new HashMap<String, Float>();
-        hmap.put("x", x + width/2);
-        hmap.put("y", y + height/2);
+        hmap.put("x", x + width / 2);
+        hmap.put("y", y + height / 2);
         return hmap;
     }
 
