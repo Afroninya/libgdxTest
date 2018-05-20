@@ -45,42 +45,42 @@ player_left_2
   orig: 32, 48
   offset: 0, 0
   index: -1
-player_down_0
+player_right_0
   rotate: false
   xy: 96, 0
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
   index: -1
-player_down_1
+player_right_1
   rotate: false
   xy: 96, 32
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
   index: -1
-player_down_2
+player_right_2
   rotate: false
   xy: 96, 64
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
   index: -1
-player_right_0
+player_up_0
   rotate: false
   xy: 144, 0
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
   index: -1
-player_right_1
+player_up_1
   rotate: false
   xy: 144, 32
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
   index: -1
-player_right_2
+player_up_2
   rotate: false
   xy: 144, 64
   size: 32, 48
