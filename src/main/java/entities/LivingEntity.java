@@ -7,8 +7,9 @@ abstract public class LivingEntity extends Entity {
     protected short health;
 
 
-    public LivingEntity(String spriteSheet, Enum defaultSprite, String name, float x, float y) {
-        super(spriteSheet, defaultSprite, x, y);
+    public LivingEntity(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y) {
+        super(spriteSheet, initialSprite, acceleration, maxSpeed, x, y);
         this.name = name;
+        this.health = health;
     }
 }

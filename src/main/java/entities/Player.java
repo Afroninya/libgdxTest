@@ -1,57 +1,64 @@
 package entities;
 
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Input;
 import config.Config;
-import config.PathProvider;
-import entities.util.PlayerSprites;
+import entities.util.CommonSprites;
 import execution.InputHandler;
 
 public class Player extends LivingEntity {
 
-    private static final String spriteSheet = PathProvider.SHIP + "ship.atlas";
-    private static final Enum defaultSprite = PlayerSprites.SHIP_MIDDLE;
-    private final float DEFAULT_SPEED = 60;
+    private static final String DEFAULT_SPRITE_SHEET = "ship";
+    private static final String DEFAULT_INITIAL_SPRITE = DEFAULT_SPRITE_SHEET + CommonSprites.DOWN;
+    private final short DEFAULT_MAX_SPEED = 60;
 
     public Player() {
-        super(spriteSheet, defaultSprite, "player", Config.VIEWPORT_WIDTH / 2,Config.VIEWPORT_HEIGHT / 2);
-        this.speed = DEFAULT_SPEED;
+        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 5, (short) 100, Config.VIEWPORT_WIDTH / 2, Config.VIEWPORT_HEIGHT / 2);
 
     }
 
-//    public void update(float delta) {
-//        float oldX = x;
-//        float oldY = y;
-//        // update player movement
-//        if (InputHandler.isPressed(Keys.RIGHT)) {
-//            translateX(speed * delta);
-//        }
-//        if (InputHandler.isPressed(Keys.LEFT)) {
-//            translateX(-speed * delta);
-//        }
-//        if (InputHandler.isPressed(Keys.UP)) {
-//            translateY(speed * delta);
-//        }
-//        if (InputHandler.isPressed(Keys.DOWN)) {
-//            translateY(-speed * delta);
-//        }
-//
-//        // set ship texture:
-//        if (InputHandler.isPressed(Keys.UP) && !InputHandler.isPressed(Keys.DOWN)) {
-//            setSprite(PlayerSprites.SHIP_UP);
-//        } else if (InputHandler.isPressed(Keys.DOWN) && !InputHandler.isPressed(Keys.UP)) {
-//            setSprite(PlayerSprites.SHIP_DOWN);
-//        } else {
-//            setSprite(PlayerSprites.SHIP_MIDDLE);
-//        }
-//        if (collides()) {
-//            x = oldX;
-//            y = oldY;
-//        }
-//        updateSprites();
-//    }
+    public Player(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y) {
+        super(spriteSheet, initialSprite, name, health, acceleration, maxSpeed, x, y);
 
-    public void render(SpriteBatch sb) {
-        model.getSprite().draw(sb);
     }
+
+
+    public void handleMovement() {
+        if (InputHandler.isPressed(Input.Keys.W) || InputHandler.isPressed(Input.Keys.A) ||
+                InputHandler.isPressed(Input.Keys.S) || InputHandler.isPressed(Input.Keys.D)) {
+            isMoving = true;
+        } else isMoving = false;
+
+        if (InputHandler.isPressed(Input.Keys.W) && !InputHandler.isPressed(Input.Keys.S)) {
+
+            isMovingUp = true;
+        }
+        else {
+            isMovingUp = false;
+        }
+
+        if (InputHandler.isPressed(Input.Keys.S) && !InputHandler.isPressed(Input.Keys.W)) {
+
+            isMovingDown = true;
+        }
+        else {
+            isMovingDown = false;
+        }
+
+        if (InputHandler.isPressed(Input.Keys.D) && !InputHandler.isPressed(Input.Keys.A)) {
+
+            isMovingRight = true;
+        }
+        else {
+            isMovingRight = false;
+        }
+
+        if (InputHandler.isPressed(Input.Keys.A) && !InputHandler.isPressed(Input.Keys.D)) {
+
+            isMovingLeft = true;
+        }
+        else {
+            isMovingLeft = false;
+        }
+    }
+
 }
