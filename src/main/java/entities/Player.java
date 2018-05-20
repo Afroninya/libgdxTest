@@ -12,11 +12,11 @@ public class Player extends LivingEntity {
     private final short DEFAULT_MAX_SPEED = 60;
 
     public Player() {
-        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 5, (short) 100, Config.VIEWPORT_WIDTH / 2, Config.VIEWPORT_HEIGHT / 2);
+        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 5, (short) 100, Config.VIEWPORT_WIDTH / 2, Config.VIEWPORT_HEIGHT /2, 16, 24);
     }
 
-    public Player(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y) {
-        super(spriteSheet, initialSprite, name, health, acceleration, maxSpeed, x, y);
+    public Player(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y, int width, int height) {
+        super(spriteSheet, initialSprite, name, health, acceleration, maxSpeed, x, y, width, height);
     }
 
 

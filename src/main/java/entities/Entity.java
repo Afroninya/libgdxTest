@@ -18,8 +18,8 @@ abstract public class Entity {
     protected String defaultSprite;
     protected Model model;
 
-    protected float length;
     protected float width;
+    protected float height;
 
     protected float x;
     protected float y;
@@ -35,6 +35,7 @@ abstract public class Entity {
     protected boolean isMovingLeft;
 
     protected TiledMapTileLayer collisionLayer;
+    float stateTime;
 
 
     /**
@@ -48,14 +49,16 @@ abstract public class Entity {
      * Constructor.
      * Set attributes as specified in Subclass constructor call and initialize the Sprite.
      */
-    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y) {
+    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y, int width, int height) {
         this.x = x;
         this.y = y;
         this.isMoving = false;
         this.acceleration = acceleration;
         this.maxSpeed = maxSpeed;
+        this.width = width;
+        this.height = height;
 
-        initModel(x, y, spriteSheet, initialSprite);
+        initModel(x, y, spriteSheet, initialSprite, width, height);
     }
 
     /**
@@ -66,7 +69,7 @@ abstract public class Entity {
      * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
      * @param initialSprite the texture file name (e.g. "player_down")
      */
-    private void initModel(float x, float y, String spriteSheet, String initialSprite) {
+    private void initModel(float x, float y, String spriteSheet, String initialSprite, int width, int height) {
         if (spriteSheet == null) {
             final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             String className = stackTrace[3].getClassName().toLowerCase().split("\\.")[1];
@@ -82,7 +85,7 @@ abstract public class Entity {
             }
         } else {
             if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
-                this.defaultSprite = spriteSheet + CommonSprites.MIDDLE;
+                this.defaultSprite = spriteSheet + CommonSprites.DOWN;
             } else {
                 this.defaultSprite = initialSprite;
             }
@@ -92,7 +95,7 @@ abstract public class Entity {
 
         this.collisionLayer = Game.collisionLayer;
 
-        this.model = new Model(this.spriteSheet, defaultSprite, x, y);
+        this.model = new Model(this.spriteSheet, defaultSprite, x, y, 0, width, height);
     }
 
 
@@ -147,7 +150,14 @@ abstract public class Entity {
      * @param sb the corresponding SpriteBatch
      */
     public void render(SpriteBatch sb) {
-        model.getSprite().draw(sb);
+        stateTime += Gdx.graphics.getDeltaTime();
+
+        // Get current frame of animation for the current stateTime
+        if (isMovingLeft) sb.draw(model.animations.get("left").getKeyFrame(stateTime, true), x, y);
+        else if (isMovingRight) sb.draw(model.animations.get("right").getKeyFrame(stateTime, true), x, y);
+        else if (isMovingUp) sb.draw(model.animations.get("up").getKeyFrame(stateTime, true), x, y);
+        else if (isMovingDown) sb.draw(model.animations.get("down").getKeyFrame(stateTime, true), x, y);
+        else model.getSprite().draw(sb);
     }
 
 
@@ -159,7 +169,7 @@ abstract public class Entity {
         if (speedX > maxSpeed) {
             speedX = maxSpeed;
         }
-        setSprite(CommonSprites.MIDDLE);
+        setSprite(CommonSprites.RIGHT);
     }
 
     /**
@@ -170,7 +180,7 @@ abstract public class Entity {
         if (speedX < -maxSpeed) {
             speedX = -maxSpeed;
         }
-        setSprite(CommonSprites.MIDDLE);
+        setSprite(CommonSprites.LEFT);
     }
 
     /**
@@ -321,12 +331,12 @@ abstract public class Entity {
         this.model.setSprite(this.spriteBaseName + sprite.toString(), this.x, this.y);
     }
 
-    public float getLength() {
-        return length;
+    public float getHeight() {
+        return height;
     }
 
-    public void setLength(float length) {
-        this.length = length;
+    public void setHeight(float height) {
+        this.height = height;
     }
 
     public float getWidth() {

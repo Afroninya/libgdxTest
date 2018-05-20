@@ -27,30 +27,29 @@ public class Model {
     private TextureAtlas textureAtlas;
 
     private Map<String, Sprite> sprites;
-    private Map<String, Animation<TextureRegion>> animations;
+    public Map<String, Animation<TextureRegion>> animations;
 
 
     // Constructors
 
     public Model() {
-        this(null, null, 0, 0, 0);
+        this(null, null);
     }
 
     public Model(String spriteSheet, String defaultSprite) {
-        this(spriteSheet, defaultSprite, 0, 0, 0);
+        this(spriteSheet, defaultSprite, 0, 0);
     }
 
     public Model(String spriteSheet, String defaultSprite, float x, float y) {
-        this(spriteSheet, defaultSprite, x, y, 0);
+        this(spriteSheet, defaultSprite, x, y, 0, 16, 24);
     }
 
-    public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation) {
+    public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation, int width, int height) {
         this.x = x;
         this.y = y;
-        initTextures(spriteSheet, defaultSprite, x, y);
+        initTextures(spriteSheet, defaultSprite, x, y, width, height);
 //        setRotation(rotation);
     }
-
 
     // Methods
 
@@ -61,17 +60,20 @@ public class Model {
      * @param x X location
      * @param y Y location
      */
-    private void initTextures(String spriteSheet, String defaultSprite, float x, float y) {
+    private void initTextures(String spriteSheet, String defaultSprite, float x, float y, int width, int height) {
         if (spriteSheet != null && spriteSheet.endsWith(".atlas")) {
             sprites = new HashMap<String, Sprite>();
+            animations = new HashMap<String, Animation<TextureRegion>>();
             this.textureAtlas = new TextureAtlas(Gdx.files.internal(spriteSheet));
 
             textureAtlas.getRegions().forEach(element -> {
                 Sprite tmpSprite = new Sprite(element);
                 tmpSprite.setPosition(x, y);
+                tmpSprite.setSize(width, height);
                 sprites.put(element.name, tmpSprite);
             });
-            animations.put("down", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_down")));
+
+            animations.put("down", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_down"), Animation.PlayMode.LOOP));
             animations.put("up", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
             animations.put("left", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
             animations.put("right", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
