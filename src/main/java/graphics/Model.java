@@ -47,6 +47,8 @@ public class Model {
     public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation, int width, int height) {
         this.x = x;
         this.y = y;
+        this.width = width;
+        this.height = height;
         initTextures(spriteSheet, defaultSprite, x, y, width, height);
 //        setRotation(rotation);
     }
@@ -69,7 +71,6 @@ public class Model {
             textureAtlas.getRegions().forEach(element -> {
                 Sprite tmpSprite = new Sprite(element);
                 tmpSprite.setPosition(x, y);
-                tmpSprite.setSize(width, height);
                 sprites.put(element.name, tmpSprite);
             });
 

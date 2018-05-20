@@ -8,6 +8,7 @@ import config.ConfigValueProvider;
 import entities.util.CommonSprites;
 import execution.Game;
 import graphics.Model;
+import items.Inventory;
 
 import java.util.MissingResourceException;
 
@@ -33,6 +34,8 @@ abstract public class Entity {
     protected boolean isMovingDown;
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
+
+    protected Inventory inventory;
 
     protected TiledMapTileLayer collisionLayer;
     float stateTime;

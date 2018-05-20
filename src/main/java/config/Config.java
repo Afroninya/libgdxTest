@@ -8,7 +8,7 @@ public class Config {
     static int width;
     static int height;
 
-    public static boolean useViewportDimensions = true;
+    public static boolean useViewportDimensions = false;
 
     public static int V_WIDTH = 1200;
     public static int V_HEIGHT = 800;
