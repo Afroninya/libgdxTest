@@ -70,7 +70,6 @@ public class Model {
             textureAtlas.getRegions().forEach(element -> {
                 Sprite tmpSprite = new Sprite(element);
                 tmpSprite.setPosition(x, y);
-                tmpSprite.setScale(0.4f);
                 sprites.put(element.name, tmpSprite);
             });
 

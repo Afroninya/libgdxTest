@@ -35,6 +35,13 @@ abstract public class Entity {
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
+    //0 up, 1 left, 2 down, 3 right
+    private Direction direction = Direction.DOWN;
+
+    private enum Direction {
+        UP, LEFT, RIGHT, DOWN
+    }
+
     protected TiledMapTileLayer collisionLayer;
     float stateTime;
 
@@ -115,15 +122,19 @@ abstract public class Entity {
         if (isMoving) {
             if (isMovingRight && !isMovingLeft) {
                 moveRight();
+                direction = Direction.RIGHT;
             }
             if (isMovingLeft && !isMovingRight) {
                 moveLeft();
+                direction = Direction.LEFT;
             }
             if (isMovingUp && !isMovingDown) {
                 moveUp();
+                direction = Direction.UP;
             }
             if (isMovingDown && !isMovingUp) {
                 moveDown();
+                direction = Direction.DOWN;
             }
 
             if (speedX != 0 && (isMovingUp || isMovingDown)) {
@@ -151,6 +162,7 @@ abstract public class Entity {
      * @param sb the corresponding SpriteBatch
      */
     public void render(SpriteBatch sb) {
+        final float spriteScale = 0.4f;
         stateTime += Gdx.graphics.getDeltaTime();
 
         // Get current frame of animation for the current stateTime
@@ -159,11 +171,8 @@ abstract public class Entity {
         else if (isMovingRight) tr = model.animations.get("right").getKeyFrame(stateTime, true);
         else if (isMovingUp) tr = model.animations.get("up").getKeyFrame(stateTime, true);
         else if (isMovingDown) tr = model.animations.get("down").getKeyFrame(stateTime, true);
-        if (tr != null) {
-            sb.draw(tr, x, y, tr.getRegionWidth()*0.4f, tr.getRegionHeight()*0.4f);
-        } else {
-            model.getSprite().draw(sb);
-        }
+        else tr = model.animations.get(direction.name().toLowerCase()).getKeyFrame(1);
+        sb.draw(tr, x, y, tr.getRegionWidth() * spriteScale, tr.getRegionHeight() * spriteScale);
     }
 
 
