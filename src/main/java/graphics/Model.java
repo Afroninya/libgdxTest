@@ -1,8 +1,10 @@
 package graphics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class Model {
     private TextureAtlas textureAtlas;
 
     private Map<String, Sprite> sprites;
+    private Map<String, Animation<TextureRegion>> animations;
 
 
     // Constructors
@@ -68,6 +71,10 @@ public class Model {
                 tmpSprite.setPosition(x, y);
                 sprites.put(element.name, tmpSprite);
             });
+            animations.put("down", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_down")));
+            animations.put("up", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
+            animations.put("left", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
+            animations.put("right", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
             setSprite(defaultSprite);
         }
     }

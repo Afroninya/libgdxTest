@@ -7,7 +7,7 @@ import execution.InputHandler;
 
 public class Player extends LivingEntity {
 
-    private static final String DEFAULT_SPRITE_SHEET = "ship";
+    private static final String DEFAULT_SPRITE_SHEET = "player";
     private static final String DEFAULT_INITIAL_SPRITE = DEFAULT_SPRITE_SHEET + CommonSprites.DOWN;
     private final short DEFAULT_MAX_SPEED = 60;
 
