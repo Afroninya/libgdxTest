@@ -1,5 +1,6 @@
 package execution;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,17 +15,18 @@ import config.ConfigValueProvider;
 import entities.Player;
 
 public class Game extends ApplicationAdapter {
-    SpriteBatch sb;
-    OrthographicCamera cam;
-    Player player;
+    public static TiledMapTileLayer collisionLayer;
+    private SpriteBatch sb;
+    private OrthographicCamera cam;
+    private Player player;
     private InputHandler inputHandler;
     private float delta;
     private TiledMap tileMap, collisionMap;
     private OrthogonalTiledMapRenderer tileMapRenderer, collisionMapRenderer;
-    public static TiledMapTileLayer collisionLayer;
 
     @Override
     public void create() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
         cam = new OrthographicCamera();
         cam.setToOrtho(false, Config.VIEWPORT_WIDTH, Config.VIEWPORT_HEIGHT);
         sb = new SpriteBatch();
@@ -37,9 +39,7 @@ public class Game extends ApplicationAdapter {
         //load collision map
         collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
         collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
-        collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get(
-                "Tile Layer 1");
-
+        collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Tile Layer 1");
         player = new Player();
         inputHandler = new InputHandler();
     }
@@ -66,7 +66,7 @@ public class Game extends ApplicationAdapter {
         collisionMapRenderer.setView(cam);
         collisionMapRenderer.render();
         sb.begin();
-        Gdx.graphics.setTitle(""+Gdx.graphics.getFramesPerSecond());
+        Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
         sb.end();
     }

@@ -26,7 +26,6 @@ public class InputHandler {
         if (Gdx.input.isKeyPressed(Keys.UP)) {
             keysPressed.add(Keys.UP);
         }
-
         if (Gdx.input.isKeyPressed(Keys.W)) {
             keysPressed.add(Keys.W);
         }

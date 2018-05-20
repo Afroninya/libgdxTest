@@ -13,6 +13,7 @@ public class Model {
     private float x;
     private float y;
 
+    //TODO: assign
     private float width;
     private float height;
 

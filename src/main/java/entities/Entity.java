@@ -1,5 +1,6 @@
 package entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -59,9 +60,10 @@ abstract public class Entity {
 
     /**
      * Initialize the Sprite
-     * @param x initial X position
-     * @param y initial Y position
-     * @param spriteSheet base name of the spritesheet file (e.g. "player.atlas")
+     *
+     * @param x             initial X position
+     * @param y             initial Y position
+     * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
      * @param initialSprite the texture file name (e.g. "player_down")
      */
     private void initModel(float x, float y, String spriteSheet, String initialSprite) {
@@ -76,14 +78,12 @@ abstract public class Entity {
             } catch (MissingResourceException e) {
                 e.printStackTrace();
                 System.out.println("No Spritesheet found for Entity " + className);
-                throw(e);
+                throw (e);
             }
-        }
-        else {
+        } else {
             if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
                 this.defaultSprite = spriteSheet + CommonSprites.MIDDLE;
-            }
-            else {
+            } else {
                 this.defaultSprite = initialSprite;
             }
             this.spriteBaseName = spriteSheet;
@@ -98,6 +98,7 @@ abstract public class Entity {
 
     /**
      * The engines update method. Called once every game tick / frame.
+     *
      * @param delta the amount of time between frames in seconds.
      */
     public void update(float delta) {
@@ -123,12 +124,10 @@ abstract public class Entity {
 
             if (speedX != 0 && (isMovingUp || isMovingDown)) {
                 inertia_x();
-            }
-            else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
+            } else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
                 inertia_y();
             }
-        }
-        else {
+        } else {
             phaseOutMovement();
         }
 
@@ -144,6 +143,7 @@ abstract public class Entity {
 
     /**
      * The engines render method. Called once every game tick
+     *
      * @param sb the corresponding SpriteBatch
      */
     public void render(SpriteBatch sb) {
@@ -198,24 +198,23 @@ abstract public class Entity {
 
     /**
      * Check for any collision between entity and map.
+     *
      * @return true if a collision occured
      */
-    public boolean collides(){
+    public boolean collides() {
         //Check For Collision
-        boolean collisionWithMap = false;
-        // check right side middle
-        collisionWithMap = isCellBLocked(x, y);
+        boolean collisionWithMap = isCellBLocked(x, y);
 
         //React to Collision
         if (collisionWithMap) {
-            System.out.println("player-map collision!!!");
-            return true;
+            Gdx.app.debug("Collision", "Player collides.");
         }
-        return false;
+        return collisionWithMap;
     }
 
     /**
      * Check if the specified space is blocked by terrain.
+     *
      * @param x X location
      * @param y Y location
      * @return true if space is blocked
@@ -238,7 +237,7 @@ abstract public class Entity {
     }
 
     /**
-     * onverge X speed to 0 if entity is not moving in any X direction.
+     * Converge X speed to 0 if entity is not moving in any X direction.
      */
     public void inertia_x() {
         if (!isMovingLeft && !isMovingRight) {
@@ -249,7 +248,7 @@ abstract public class Entity {
     }
 
     /**
-     * onverge Y speed to 0 if entity is not moving in any Y direction.
+     * Converge Y speed to 0 if entity is not moving in any Y direction.
      */
     public void inertia_y() {
         if (!isMovingUp && !isMovingDown) {
@@ -261,6 +260,7 @@ abstract public class Entity {
 
     /**
      * Move based on the entity's speed.
+     *
      * @param delta frame based movement scaling
      */
     public void move(float delta) {
@@ -269,15 +269,16 @@ abstract public class Entity {
 
     /**
      * Move by a specified amount
-     * @param x X amount
-     * @param y Y amount
+     *
+     * @param x     X amount
+     * @param y     Y amount
      * @param delta frame based movement scaling
      */
     public void move(double x, double y, float delta) {
         double hypo = Math.hypot(x, y);
         double angle = (x == 0 && y == 0) ? 0 : Math.round(Math.toDegrees(Math.asin(Math.abs(x) / hypo)));
 
-        double x_speedMod  = angle / 90;
+        double x_speedMod = angle / 90;
         double y_speedMod = 1 - (angle / 90);
 
         translateX((float) (x * x_speedMod) * delta);
@@ -286,6 +287,7 @@ abstract public class Entity {
 
     /**
      * Move by specified amount and update the sprite accordingly
+     *
      * @param x X amount
      */
     public void translateX(float x) {
@@ -295,6 +297,7 @@ abstract public class Entity {
 
     /**
      * Move by specified amount and update the sprite accordingly
+     *
      * @param y Y amount
      */
     public void translateY(float y) {
@@ -311,6 +314,7 @@ abstract public class Entity {
 
     /**
      * Change the currently displayed sprite.
+     *
      * @param sprite the suffix of the new sprite (e.g. "down")
      */
     public void setSprite(CommonSprites sprite) {

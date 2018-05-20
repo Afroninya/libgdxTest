@@ -12,15 +12,12 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-// https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx
+    // https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx
     compile group: "com.badlogicgames.gdx", name: "gdx", version: "1.9.8"
-
-// https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-platform
+    // https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-platform
     compile group: "com.badlogicgames.gdx", name: "gdx-platform", version: "1.9.8"
-
     compile group: "net.sf.proguard", name: "proguard-base", version: "4.11"
     compile group: "com.badlogicgames.gdx", name: "gdx-backend-lwjgl", version: "1.9.8"
     compile group: "com.badlogicgames.gdx", name: "gdx-platform", version: "1.9.8", classifier: "natives-desktop"
     compileClasspath "com.badlogicgames.gdx:gdx-tools:1.9.8"
-
 }
