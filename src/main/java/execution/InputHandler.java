@@ -7,11 +7,30 @@ import java.util.ArrayList;
 
 public class InputHandler {
 
+    Game game;
+
+    public InputHandler(Game game) {
+        this.game = game;
+    }
+
     public static ArrayList<Integer> keysPressed = new ArrayList<>();
 
     public void update() {
         // reset all pressed keys
         keysPressed.clear();
+
+        //console handling
+        if (Gdx.input.isKeyPressed(Keys.T) && !game.hud.getConsole().isOn()) {
+            game.hud.getConsole().toggleConsole();
+        }
+        if (Gdx.input.isKeyPressed(Keys.ENTER) && game.hud.getConsole().isOn()) {
+            game.hud.getConsole().handleInput();
+            game.hud.getConsole().toggleConsole();
+        }
+        if (Gdx.input.isKeyPressed(Keys.ESCAPE) && game.hud.getConsole().isOn()) {
+            game.hud.getConsole().toggleConsole();
+        }
+        if (game.hud.getConsole().isOn()) return;
 
         // add to list if key is touched
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
