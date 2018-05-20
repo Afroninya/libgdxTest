@@ -10,7 +10,6 @@ import config.Config;
 
 public class Console {
 
-    private BitmapFont font;
     private boolean on;
     private TextField tf = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
     private Stage stage;
