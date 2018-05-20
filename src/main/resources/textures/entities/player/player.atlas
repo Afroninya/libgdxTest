@@ -1,89 +1,89 @@
 player.png
-size: 96, 192
+size: 128, 256
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-player_down_0
+player_down
   rotate: false
   xy: 0, 0
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_down_1
+  index: 0
+player_down
   rotate: false
-  xy: 0, 32
-  size: 19, 17
-  orig: 19, 17
-  offset: 0, 0
-  index: -1
-player_down_1
-  rotate: false
-  xy: 0, 64
-  size: 19, 17
-  orig: 19, 17
-  offset: 0, 0
-  index: -1
-player_left_0
-  rotate: false
-  xy: 48, 0
+  xy: 32, 0
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_left_1
+  index: 1
+player_down
   rotate: false
-  xy: 48, 32
+  xy: 64, 0
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_left_2
-  rotate: false
-  xy: 48, 64
-  size: 32, 48
-  orig: 32, 48
-  offset: 0, 0
-  index: -1
-player_right_0
+  index: 2
+player_left
   rotate: false
   xy: 96, 0
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_right_1
+  index: 0
+player_left
   rotate: false
-  xy: 96, 32
+  xy: 0, 48
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_right_2
+  index: 1
+player_left
   rotate: false
-  xy: 96, 64
+  xy: 32, 48
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_up_0
+  index: 2
+player_right
   rotate: false
-  xy: 144, 0
+  xy: 64, 48
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_up_1
+  index: 0
+player_right
   rotate: false
-  xy: 144, 32
+  xy: 96, 48
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
-player_up_2
+  index: 1
+player_right
   rotate: false
-  xy: 144, 64
+  xy: 0, 96
   size: 32, 48
   orig: 32, 48
   offset: 0, 0
-  index: -1
+  index: 2
+player_up
+  rotate: false
+  xy: 32, 96
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 0
+player_up
+  rotate: false
+  xy: 64, 96
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 1
+player_up
+  rotate: false
+  xy: 96, 96
+  size: 32, 48
+  orig: 32, 48
+  offset: 0, 0
+  index: 2

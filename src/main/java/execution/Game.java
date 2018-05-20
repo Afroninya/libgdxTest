@@ -16,10 +16,9 @@ import entities.Player;
 
 public class Game extends ApplicationAdapter {
     public static TiledMapTileLayer collisionLayer;
-    public HUD hud;
-    public Player player;
     private SpriteBatch sb;
     private OrthographicCamera cam;
+    private Player player;
     private InputHandler inputHandler;
     private float delta;
     private TiledMap tileMap, collisionMap;
@@ -31,7 +30,6 @@ public class Game extends ApplicationAdapter {
         cam = new OrthographicCamera();
         cam.setToOrtho(false, Config.VIEWPORT_WIDTH, Config.VIEWPORT_HEIGHT);
         sb = new SpriteBatch();
-        hud = new HUD(this);
 
         //load tilemap
         tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
@@ -41,9 +39,9 @@ public class Game extends ApplicationAdapter {
         //load collision map
         collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
         collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
-        collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Tile Layer 1");
+        collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Kachelebene 1");
         player = new Player();
-        inputHandler = new InputHandler(this);
+        inputHandler = new InputHandler();
     }
 
     @Override
@@ -71,7 +69,5 @@ public class Game extends ApplicationAdapter {
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
         sb.end();
-        hud.render();
     }
-
 }
