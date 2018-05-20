@@ -2,22 +2,12 @@ package entities;
 
 abstract public class LivingEntity extends Entity {
 
-    private String name;
-    private short health;
+    protected String name;
+    protected short health;
 
-
-    public LivingEntity() {
-        super();
-        this.name = "Unknown";
-    }
-
-    public LivingEntity(String name) {
-        super();
+    public LivingEntity(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y) {
+        super(spriteSheet, initialSprite, acceleration, maxSpeed, x, y);
         this.name = name;
-    }
-
-    public LivingEntity(String name, int x, int y) {
-        super(x, y);
-        this.name = name;
+        this.health = health;
     }
 }

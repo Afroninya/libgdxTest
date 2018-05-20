@@ -1,3 +1,5 @@
+package execution;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
@@ -23,6 +25,18 @@ public class InputHandler {
         }
         if (Gdx.input.isKeyPressed(Keys.UP)) {
             keysPressed.add(Keys.UP);
+        }
+        if (Gdx.input.isKeyPressed(Keys.W)) {
+            keysPressed.add(Keys.W);
+        }
+        if (Gdx.input.isKeyPressed(Keys.A)) {
+            keysPressed.add(Keys.A);
+        }
+        if (Gdx.input.isKeyPressed(Keys.S)) {
+            keysPressed.add(Keys.S);
+        }
+        if (Gdx.input.isKeyPressed(Keys.D)) {
+            keysPressed.add(Keys.D);
         }
     }
 
