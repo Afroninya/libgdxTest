@@ -35,7 +35,6 @@ public class Game extends ApplicationAdapter {
         tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
         tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
 
-
         //load collision map
         collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
         collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
@@ -61,8 +60,8 @@ public class Game extends ApplicationAdapter {
         cam.update();
 
         //render
-        //collisionMapRenderer.setView(cam);
-        //collisionMapRenderer.render();
+        collisionMapRenderer.setView(cam);
+        collisionMapRenderer.render();
         tileMapRenderer.setView(cam);
         tileMapRenderer.render();
         sb.begin();

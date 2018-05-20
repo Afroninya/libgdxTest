@@ -3,6 +3,7 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import config.ConfigValueProvider;
 import entities.util.CommonSprites;
@@ -153,11 +154,16 @@ abstract public class Entity {
         stateTime += Gdx.graphics.getDeltaTime();
 
         // Get current frame of animation for the current stateTime
-        if (isMovingLeft) sb.draw(model.animations.get("left").getKeyFrame(stateTime, true), x, y);
-        else if (isMovingRight) sb.draw(model.animations.get("right").getKeyFrame(stateTime, true), x, y);
-        else if (isMovingUp) sb.draw(model.animations.get("up").getKeyFrame(stateTime, true), x, y);
-        else if (isMovingDown) sb.draw(model.animations.get("down").getKeyFrame(stateTime, true), x, y);
-        else model.getSprite().draw(sb);
+        TextureRegion tr = null;
+        if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
+        else if (isMovingRight) tr = model.animations.get("right").getKeyFrame(stateTime, true);
+        else if (isMovingUp) tr = model.animations.get("up").getKeyFrame(stateTime, true);
+        else if (isMovingDown) tr = model.animations.get("down").getKeyFrame(stateTime, true);
+        if (tr != null) {
+            sb.draw(tr, x, y, tr.getRegionWidth()*0.4f, tr.getRegionHeight()*0.4f);
+        } else {
+            model.getSprite().draw(sb);
+        }
     }
 
 
