@@ -63,10 +63,10 @@ public class Game extends ApplicationAdapter {
         cam.update();
 
         //render
-        tileMapRenderer.setView(cam);
-        tileMapRenderer.render();
         collisionMapRenderer.setView(cam);
         collisionMapRenderer.render();
+        tileMapRenderer.setView(cam);
+        tileMapRenderer.render();
         sb.begin();
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
