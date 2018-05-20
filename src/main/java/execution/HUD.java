@@ -15,7 +15,7 @@ public class HUD {
 
     public void render() {
         sb.begin();
-        console.render(sb);
+        console.render();
         sb.end();
     }
 

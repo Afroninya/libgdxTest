@@ -1,8 +1,6 @@
 package execution;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -26,7 +24,7 @@ public class Console {
         stage.addActor(tf);
     }
 
-    public void render(SpriteBatch sb) {
+    public void render() {
         if (!on) return;
         stage.draw();
         stage.act();
@@ -37,8 +35,15 @@ public class Console {
         String[] input = text.split("\\s+");
         switch (input[0].toLowerCase()) {
             //add console input cases here
-            case "test":
-                game.player.getSprite().rotate90(true);
+            case "pos":
+            case "position":
+            case "teleport":
+            case "tp":
+                try {
+                    game.player.setX(Integer.parseInt(input[1]));
+                    game.player.setY(Integer.parseInt(input[2]));
+                } catch (NumberFormatException ignored) {
+                }
                 break;
         }
         tf.setText("");

@@ -1,7 +1,6 @@
 package entities;
 
 import com.badlogic.gdx.Input;
-import config.Config;
 import entities.util.CommonSprites;
 import execution.InputHandler;
 
@@ -12,7 +11,8 @@ public class Player extends LivingEntity {
     private final short DEFAULT_MAX_SPEED = 60;
 
     public Player() {
-        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 5, (short) 100, Config.VIEWPORT_WIDTH / 2, Config.VIEWPORT_HEIGHT /2, 16, 24);
+        //350 and 100 are the start values for the player. don't knowsn
+        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 5, (short) 100, 350, 150, 16, 24);
     }
 
     public Player(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y, int width, int height) {

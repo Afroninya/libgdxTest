@@ -3,12 +3,12 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import config.ConfigValueProvider;
 import entities.util.CommonSprites;
 import execution.Game;
 import graphics.Model;
-import items.Inventory;
 
 import java.util.MissingResourceException;
 
@@ -35,7 +35,12 @@ abstract public class Entity {
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
-    protected Inventory inventory;
+    //0 up, 1 left, 2 down, 3 right
+    private Direction direction = Direction.DOWN;
+
+    private enum Direction {
+        UP, LEFT, RIGHT, DOWN
+    }
 
     protected TiledMapTileLayer collisionLayer;
     float stateTime;
@@ -117,15 +122,19 @@ abstract public class Entity {
         if (isMoving) {
             if (isMovingRight && !isMovingLeft) {
                 moveRight();
+                direction = Direction.RIGHT;
             }
             if (isMovingLeft && !isMovingRight) {
                 moveLeft();
+                direction = Direction.LEFT;
             }
             if (isMovingUp && !isMovingDown) {
                 moveUp();
+                direction = Direction.UP;
             }
             if (isMovingDown && !isMovingUp) {
                 moveDown();
+                direction = Direction.DOWN;
             }
 
             if (speedX != 0 && (isMovingUp || isMovingDown)) {
@@ -156,11 +165,13 @@ abstract public class Entity {
         stateTime += Gdx.graphics.getDeltaTime();
 
         // Get current frame of animation for the current stateTime
-        if (isMovingLeft) sb.draw(model.animations.get("left").getKeyFrame(stateTime, true), x, y);
-        else if (isMovingRight) sb.draw(model.animations.get("right").getKeyFrame(stateTime, true), x, y);
-        else if (isMovingUp) sb.draw(model.animations.get("up").getKeyFrame(stateTime, true), x, y);
-        else if (isMovingDown) sb.draw(model.animations.get("down").getKeyFrame(stateTime, true), x, y);
-        else model.getSprite().draw(sb);
+        TextureRegion tr;
+        if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
+        else if (isMovingRight) tr = model.animations.get("right").getKeyFrame(stateTime, true);
+        else if (isMovingUp) tr = model.animations.get("up").getKeyFrame(stateTime, true);
+        else if (isMovingDown) tr = model.animations.get("down").getKeyFrame(stateTime, true);
+        else tr = model.animations.get(direction.name().toLowerCase()).getKeyFrame(2);
+        sb.draw(tr, x, y, width, height);
     }
 
 

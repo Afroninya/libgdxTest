@@ -10,11 +10,12 @@ public class Config {
 
     public static boolean useViewportDimensions = false;
 
-    public static int V_WIDTH = 1200;
-    public static int V_HEIGHT = 800;
-    public static int VIEWPORT_WIDTH = useViewportDimensions ? 312 : V_WIDTH;
-    public static int VIEWPORT_HEIGHT = useViewportDimensions ? 192 : V_WIDTH;
-
+    public static int V_WIDTH;
+    public static int V_HEIGHT;
+    public static int VIEWPORT_WIDTH;
+    public static int VIEWPORT_HEIGHT;
+    public static final int screenWidth = 400;
+    public static final int screenHeight = 300;
 
     public static void getConfig() {
         try {
@@ -23,6 +24,8 @@ public class Config {
             height = gd.getDisplayMode().getHeight();
             V_WIDTH = width;
             V_HEIGHT = height;
+            VIEWPORT_WIDTH = useViewportDimensions ? screenWidth : V_WIDTH;
+            VIEWPORT_HEIGHT = useViewportDimensions ? screenHeight : V_HEIGHT;
             System.out.println(width + " " + height);
         } catch (HeadlessException e) {
             e.printStackTrace();

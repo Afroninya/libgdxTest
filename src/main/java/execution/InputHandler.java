@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class InputHandler {
 
-    Game game;
+    private Game game;
 
     public InputHandler(Game game) {
         this.game = game;
@@ -19,7 +19,7 @@ public class InputHandler {
         // reset all pressed keys
         keysPressed.clear();
 
-        //console handling
+        // console handling
         if (Gdx.input.isKeyPressed(Keys.T) && !game.hud.getConsole().isOn()) {
             game.hud.getConsole().toggleConsole();
         }
@@ -31,6 +31,7 @@ public class InputHandler {
             game.hud.getConsole().toggleConsole();
         }
         if (game.hud.getConsole().isOn()) return;
+
 
         // add to list if key is touched
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {

@@ -47,8 +47,6 @@ public class Model {
     public Model(String spriteSheet, String defaultSprite, float x, float y, float rotation, int width, int height) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
         initTextures(spriteSheet, defaultSprite, x, y, width, height);
 //        setRotation(rotation);
     }
@@ -57,10 +55,11 @@ public class Model {
 
     /**
      * Load spritesheet and save sprites into a TextureAtlas
-     * @param spriteSheet spritesheet base name
+     *
+     * @param spriteSheet   spritesheet base name
      * @param defaultSprite initially displayed sprite
-     * @param x X location
-     * @param y Y location
+     * @param x             X location
+     * @param y             Y location
      */
     private void initTextures(String spriteSheet, String defaultSprite, float x, float y, int width, int height) {
         if (spriteSheet != null && spriteSheet.endsWith(".atlas")) {
@@ -86,12 +85,13 @@ public class Model {
      * Center the model on the current screen.
      */
     public void centerOnScreen() {
-        setPosition(Gdx.graphics.getWidth()/2 - width + width/2,
-                Gdx.graphics.getHeight()/2 - height + height/2);
+        setPosition(Gdx.graphics.getWidth() / 2 - width + width / 2,
+                Gdx.graphics.getHeight() / 2 - height + height / 2);
     }
 
     /**
      * Rotate the model by specified amount.
+     *
      * @param degrees rotation amount in degrees
      */
     public void rotate(float degrees) {
@@ -103,8 +103,8 @@ public class Model {
 
     public Map<String, Float> getCenter() {
         HashMap<String, Float> hmap = new HashMap<String, Float>();
-        hmap.put("x", x + width/2);
-        hmap.put("y", y + height/2);
+        hmap.put("x", x + width / 2);
+        hmap.put("y", y + height / 2);
         return hmap;
     }
 
