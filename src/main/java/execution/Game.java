@@ -23,6 +23,7 @@ public class Game extends ApplicationAdapter {
     private float delta;
     private TiledMap tileMap, collisionMap;
     private OrthogonalTiledMapRenderer tileMapRenderer, collisionMapRenderer;
+    private Console console;
 
     @Override
     public void create() {
@@ -30,6 +31,7 @@ public class Game extends ApplicationAdapter {
         cam = new OrthographicCamera();
         cam.setToOrtho(false, Config.VIEWPORT_WIDTH, Config.VIEWPORT_HEIGHT);
         sb = new SpriteBatch();
+        console = new Console(sb);
 
         //load tilemap
         tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
@@ -68,6 +70,7 @@ public class Game extends ApplicationAdapter {
         sb.begin();
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
+        console.render(sb);
         sb.end();
     }
 }
