@@ -6,10 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import config.Config;
 import execution.Game;
 
+import java.util.ArrayList;
+
 public class Menu {
 
     private boolean open;
-    private String[] options;
+    private ArrayList<String> options;
     private TextField tf = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
     private Stage stage;
     private Game game;
@@ -19,6 +21,8 @@ public class Menu {
         int xOffset = 10;
         int yOffset = 60;
         stage = new Stage();
+        options.add("Inventory");
+        options.add("Save and Quit");
         Gdx.input.setInputProcessor(stage);
         tf.setPosition(xOffset, Config.V_HEIGHT - yOffset);
         tf.setSize(Config.V_WIDTH - 2 * xOffset, 30);

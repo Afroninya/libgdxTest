@@ -74,10 +74,10 @@ public class Model {
                 sprites.put(element.name, tmpSprite);
             });
 
-            animations.put("down", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_down"), Animation.PlayMode.LOOP));
-            animations.put("up", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
-            animations.put("left", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
-            animations.put("right", new Animation<TextureRegion>(0.033f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
+            animations.put("down", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_down"), Animation.PlayMode.LOOP));
+            animations.put("up", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
+            animations.put("left", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
+            animations.put("right", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
             setSprite(defaultSprite);
         }
     }
