@@ -162,17 +162,16 @@ abstract public class Entity {
      * @param sb the corresponding SpriteBatch
      */
     public void render(SpriteBatch sb) {
-        final float spriteScale = 0.4f;
         stateTime += Gdx.graphics.getDeltaTime();
 
         // Get current frame of animation for the current stateTime
-        TextureRegion tr = null;
+        TextureRegion tr;
         if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
         else if (isMovingRight) tr = model.animations.get("right").getKeyFrame(stateTime, true);
         else if (isMovingUp) tr = model.animations.get("up").getKeyFrame(stateTime, true);
         else if (isMovingDown) tr = model.animations.get("down").getKeyFrame(stateTime, true);
-        else tr = model.animations.get(direction.name().toLowerCase()).getKeyFrame(1);
-        sb.draw(tr, x, y, tr.getRegionWidth() * spriteScale, tr.getRegionHeight() * spriteScale);
+        else tr = model.animations.get(direction.name().toLowerCase()).getKeyFrame(2);
+        sb.draw(tr, x, y, width, height);
     }
 
 
