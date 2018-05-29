@@ -24,11 +24,6 @@ public class Map {
                 tiles.add(new Tile(x, y, false));
             }
         }
-        //debug code to show it works
-        for (Tile tile : tiles) {
-            System.out.println(tile.toString());
-        }
-        System.out.println(getTile(5, 4).toString());
     }
 
     public void update(float delta) {

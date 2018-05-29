@@ -32,8 +32,8 @@ public class Game extends ApplicationAdapter {
         sb = new SpriteBatch();
         hud = new HUD(this);
         inputHandler = new InputHandler(this);
-        
-        map = new Map(40, 30);
+
+        map = new Map(40, 25);
         player = new Player();
     }
 

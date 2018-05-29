@@ -22,8 +22,10 @@ public class InputHandler {
 
         // mouse handling
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            //TODO: my math is somehow wrong, you dont get the correct coordinates
-            System.out.println(game.map.getTile(Gdx.input.getX() / (Tile.WIDTH * game.map.getNumberOfTilesX()), Gdx.input.getY() / (Tile.WIDTH * game.map.getNumberOfTilesY())));
+            System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
+            System.out.println((Gdx.input.getX() / (Tile.WIDTH * game.map.getNumberOfTilesX()) + " " + (Gdx.input.getY() / (Tile.WIDTH * game.map.getNumberOfTilesY()))));
+            //TODO: fick mathe
+            // System.out.println(game.map.getTile((Gdx.input.getX()+ (int)game.player.getX()) / (Tile.WIDTH * game.map.getNumberOfTilesX()) , Gdx.input.getY() / (Tile.WIDTH * game.map.getNumberOfTilesY())));
         }
 
         // console handling
