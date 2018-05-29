@@ -33,7 +33,7 @@ public class Game extends ApplicationAdapter {
         sb = new SpriteBatch();
         hud = new HUD(this);
         inputHandler = new InputHandler(this);
-
+        
         //load tilemap
         tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
         tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
@@ -42,6 +42,8 @@ public class Game extends ApplicationAdapter {
         collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
         collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
         collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Kachelebene 1");
+
+        new Map(10, 20);
         player = new Player();
     }
 
