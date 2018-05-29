@@ -24,6 +24,7 @@ public class Game extends ApplicationAdapter {
     private float delta;
     private TiledMap tileMap, collisionMap;
     private OrthogonalTiledMapRenderer tileMapRenderer, collisionMapRenderer;
+    private Map map;
 
     @Override
     public void create() {
@@ -43,7 +44,7 @@ public class Game extends ApplicationAdapter {
         collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
         collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Kachelebene 1");
 
-        new Map(10, 20);
+        map = new Map(10, 20);
         player = new Player();
     }
 
@@ -64,11 +65,13 @@ public class Game extends ApplicationAdapter {
         cam.update();
 
         //render
+        map.update(delta);
         collisionMapRenderer.setView(cam);
         collisionMapRenderer.render();
         tileMapRenderer.setView(cam);
         tileMapRenderer.render();
         sb.begin();
+        map.render(sb);
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
         sb.end();

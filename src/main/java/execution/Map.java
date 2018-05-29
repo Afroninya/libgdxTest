@@ -1,11 +1,13 @@
 package execution;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import java.util.ArrayList;
 
 public class Map {
 
     //the tilemap
-    private ArrayList<Tile> tiles;
+    public ArrayList<Tile> tiles;
     //the width of the map in tiles
     private int numberOfTilesX;
     //the height of the map in tiles
@@ -27,6 +29,14 @@ public class Map {
             System.out.println(tile.toString());
         }
         System.out.println(getTile(5, 4).toString());
+    }
+
+    public void update(float delta) {
+        tiles.forEach(tile -> tile.update(delta));
+    }
+
+    public void render(SpriteBatch sb) {
+        tiles.forEach(tile -> tile.draw(sb));
     }
 
     private Tile getTile(int x, int y) {
