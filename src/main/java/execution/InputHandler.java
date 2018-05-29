@@ -1,6 +1,7 @@
 package execution;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 
 import java.util.ArrayList;
@@ -18,6 +19,12 @@ public class InputHandler {
     public void update() {
         // reset all pressed keys
         keysPressed.clear();
+
+        // mouse handling
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            //TODO: my math is somehow wrong, you dont get the correct coordinates
+            System.out.println(game.map.getTile(Gdx.input.getX() / (Tile.WIDTH * game.map.getNumberOfTilesX()), Gdx.input.getY() / (Tile.WIDTH * game.map.getNumberOfTilesY())));
+        }
 
         // console handling
         if (Gdx.input.isKeyPressed(Keys.T) && !game.hud.getConsole().isOn()) {

@@ -39,8 +39,15 @@ public class Map {
         tiles.forEach(tile -> tile.draw(sb));
     }
 
-    private Tile getTile(int x, int y) {
+    public Tile getTile(int x, int y) {
         return tiles.get(y + numberOfTilesY * x);
     }
 
+    public int getNumberOfTilesX() {
+        return numberOfTilesX;
+    }
+
+    public int getNumberOfTilesY() {
+        return numberOfTilesY;
+    }
 }

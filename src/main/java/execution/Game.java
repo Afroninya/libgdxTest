@@ -22,9 +22,7 @@ public class Game extends ApplicationAdapter {
     private OrthographicCamera cam;
     private InputHandler inputHandler;
     private float delta;
-    private TiledMap tileMap, collisionMap;
-    private OrthogonalTiledMapRenderer tileMapRenderer, collisionMapRenderer;
-    private Map map;
+    public Map map;
 
     @Override
     public void create() {
@@ -35,16 +33,7 @@ public class Game extends ApplicationAdapter {
         hud = new HUD(this);
         inputHandler = new InputHandler(this);
         
-        //load tilemap
-        tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
-        tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
-
-        //load collision map
-        collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
-        collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
-        collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Kachelebene 1");
-
-        map = new Map(10, 20);
+        map = new Map(40, 30);
         player = new Player();
     }
 
@@ -66,10 +55,6 @@ public class Game extends ApplicationAdapter {
 
         //render
         map.update(delta);
-        collisionMapRenderer.setView(cam);
-        collisionMapRenderer.render();
-        tileMapRenderer.setView(cam);
-        tileMapRenderer.render();
         sb.begin();
         map.render(sb);
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());

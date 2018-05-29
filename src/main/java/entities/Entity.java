@@ -149,8 +149,7 @@ abstract public class Entity {
             } else {
                 phaseOutMovement();
             }
-        }
-        else {
+        } else {
 
         }
 
@@ -252,12 +251,8 @@ abstract public class Entity {
      * @return true if space is blocked
      */
     public boolean isCellBLocked(float x, float y) {
-        TiledMapTileLayer.Cell cell = collisionLayer.getCell(
-                (int) (x / collisionLayer.getTileWidth()),
-                (int) (y / collisionLayer.getTileHeight()));
-
-        return cell != null && cell.getTile() != null
-                && cell.getTile().getProperties().containsKey("blocked");
+        //TODO: collision
+        return false;
     }
 
     /**

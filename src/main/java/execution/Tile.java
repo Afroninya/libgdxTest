@@ -36,9 +36,9 @@ public class Tile {
     }
 
     public void draw(SpriteBatch sb) {
-        font.setColor(Color.YELLOW);
+        font.setColor(Color.WHITE);
         sb.draw(texture, tileX*WIDTH, tileY*WIDTH);
-        font.draw(sb, tileX + ", " + tileY, tileX*WIDTH, tileY*WIDTH);
+        font.draw(sb, tileX + ", " + tileY, tileX*WIDTH, tileY*WIDTH+WIDTH);
         //TODO: calculate pixelX and pixelY
         //TODO: draw texture at pixelX, pixelY with size WIDTH*WIDTH
     }
