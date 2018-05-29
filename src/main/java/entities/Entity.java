@@ -35,6 +35,8 @@ abstract public class Entity {
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
+    protected boolean inCombat = false;
+
     //0 up, 1 left, 2 down, 3 right
     private Direction direction = Direction.DOWN;
 
@@ -119,31 +121,37 @@ abstract public class Entity {
 
         handleMovement();
 
-        if (isMoving) {
-            if (isMovingRight && !isMovingLeft) {
-                moveRight();
-                direction = Direction.RIGHT;
-            }
-            if (isMovingLeft && !isMovingRight) {
-                moveLeft();
-                direction = Direction.LEFT;
-            }
-            if (isMovingUp && !isMovingDown) {
-                moveUp();
-                direction = Direction.UP;
-            }
-            if (isMovingDown && !isMovingUp) {
-                moveDown();
-                direction = Direction.DOWN;
-            }
+        if (!inCombat) {
 
-            if (speedX != 0 && (isMovingUp || isMovingDown)) {
-                inertia_x();
-            } else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
-                inertia_y();
+            if (isMoving) {
+                if (isMovingRight && !isMovingLeft) {
+                    moveRight();
+                    direction = Direction.RIGHT;
+                }
+                if (isMovingLeft && !isMovingRight) {
+                    moveLeft();
+                    direction = Direction.LEFT;
+                }
+                if (isMovingUp && !isMovingDown) {
+                    moveUp();
+                    direction = Direction.UP;
+                }
+                if (isMovingDown && !isMovingUp) {
+                    moveDown();
+                    direction = Direction.DOWN;
+                }
+
+                if (speedX != 0 && (isMovingUp || isMovingDown)) {
+                    inertia_x();
+                } else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
+                    inertia_y();
+                }
+            } else {
+                phaseOutMovement();
             }
-        } else {
-            phaseOutMovement();
+        }
+        else {
+
         }
 
         move(delta);
