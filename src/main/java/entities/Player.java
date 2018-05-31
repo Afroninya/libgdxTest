@@ -12,7 +12,7 @@ public class Player extends LivingEntity {
 
     public Player() {
         //350 and 100 are the start values for the player. don't knowsn
-        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 5, (short) 100, 350, 150, 32, 48);
+        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 15, (short) 300, 350, 150, 32, 48);
     }
 
     public Player(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, float x, float y, int width, int height) {

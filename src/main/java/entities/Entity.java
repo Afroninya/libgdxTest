@@ -332,6 +332,11 @@ abstract public class Entity {
         this.model.setY(this.y);
     }
 
+    public void setPosition(float x, float y) {
+        setX(x);
+        setY(y);
+    }
+
     /**
      * Update location for all sprites.
      */

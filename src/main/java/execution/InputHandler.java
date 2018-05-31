@@ -3,6 +3,7 @@ package execution;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import config.Config;
 
 import java.util.ArrayList;
 
@@ -22,10 +23,8 @@ public class InputHandler {
 
         // mouse handling
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
-            System.out.println((Gdx.input.getX() / (Tile.WIDTH * game.map.getNumberOfTilesX()) + " " + (Gdx.input.getY() / (Tile.WIDTH * game.map.getNumberOfTilesY()))));
-            //TODO: fick mathe
-            // System.out.println(game.map.getTile((Gdx.input.getX()+ (int)game.player.getX()) / (Tile.WIDTH * game.map.getNumberOfTilesX()) , Gdx.input.getY() / (Tile.WIDTH * game.map.getNumberOfTilesY())));
+            System.out.println(((int) ((game.player.getX() - ((Config.VIEWPORT_WIDTH / 2) - Gdx.input.getX())) / Tile.WIDTH)) + " " +
+                    ((int) ((game.player.getY() - ((Config.VIEWPORT_HEIGHT / 2) - (Config.VIEWPORT_HEIGHT - Gdx.input.getY()))) / Tile.WIDTH)));
         }
 
         // console handling

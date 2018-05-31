@@ -12,6 +12,7 @@ public class Map {
     private int numberOfTilesX;
     //the height of the map in tiles
     private int numberOfTilesY;
+    private Tile startingTile;
 
     //CONSTRUCTOR
     public Map(int numberOfTilesX, int numberOfTilesY) {
@@ -24,6 +25,11 @@ public class Map {
                 tiles.add(new Tile(x, y, false));
             }
         }
+        startingTile = getTile(numberOfTilesX / 2, numberOfTilesY / 2);
+    }
+
+    public Tile getStartingTile() {
+        return startingTile;
     }
 
     public void update(float delta) {

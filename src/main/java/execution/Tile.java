@@ -49,6 +49,22 @@ public class Tile {
         }
     }
 
+    public int getOriginX() {
+        return tileX * WIDTH;
+    }
+
+    public int getOriginY() {
+        return tileY * WIDTH;
+    }
+
+    public float getCenterX() {
+        return (tileX * WIDTH) + (WIDTH / 2);
+    }
+
+    public float getCenterY() {
+        return (tileY * WIDTH) + (WIDTH / 2);
+    }
+
     public String toString() {
         return "Tile {" + tileX + " | " + tileY + ", passable=" + passable + "}";
     }
