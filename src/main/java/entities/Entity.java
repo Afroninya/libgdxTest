@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import config.ConfigValueProvider;
 import entities.util.CommonSprites;
 import execution.Game;
+import execution.Tile;
 import graphics.Model;
 
 import java.util.MissingResourceException;
@@ -29,13 +30,22 @@ abstract public class Entity {
     protected double maxSpeed;
     protected double acceleration;
 
+    protected double health;
+    protected int damage;
+    protected int movement;
+
     protected boolean isMoving;
     protected boolean isMovingUp;
     protected boolean isMovingDown;
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
-    protected boolean inCombat = false;
+    protected boolean inMovementPhase = true;
+
+    protected float destinationX;
+    protected float destinationY;
+
+    protected boolean inCombat = true;
 
     //0 up, 1 left, 2 down, 3 right
     private Direction direction = Direction.DOWN;
@@ -54,17 +64,23 @@ abstract public class Entity {
      */
     public abstract void handleMovement();
 
+    public abstract void executeTurn();
+
 
     /**
      * Constructor.
      * Set attributes as specified in Subclass constructor call and initialize the Sprite.
      */
-    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y, int width, int height) {
+    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, double health, int damage,
+                  int movement, float x, float y, int width, int height) {
         this.x = x;
         this.y = y;
         this.isMoving = false;
         this.acceleration = acceleration;
         this.maxSpeed = maxSpeed;
+        this.health = health;
+        this.damage = damage;
+        this.movement = movement;
         this.width = width;
         this.height = height;
 
@@ -149,8 +165,38 @@ abstract public class Entity {
             } else {
                 phaseOutMovement();
             }
-        } else {
 
+        } else if (inMovementPhase) {
+            speedY = 0;
+            speedX = 0;
+
+            if (isMoving) {
+                if (destinationY > y) {
+                    if (y < destinationY - maxSpeed * delta) speedY = maxSpeed;
+                    else {
+                        speedY = (destinationY - y) / delta;
+                        isMoving = false;
+                    }
+                } else if (destinationY < y) {
+                    if (y > destinationY + maxSpeed * delta) speedY = -maxSpeed;
+                    else {
+                        speedY = (destinationY - y) / delta;
+                        isMoving = false;
+                    }
+                } else if (destinationX > x) {
+                    if (x < destinationX - maxSpeed * delta) speedX = maxSpeed;
+                    else {
+                        speedX = (destinationX - x) / delta;
+                        isMoving = false;
+                    }
+                } else {
+                    if (x > destinationX + maxSpeed * delta) speedX = -maxSpeed;
+                    else {
+                        speedX = (destinationX - x) / delta;
+                        isMoving = false;
+                    }
+                }
+            }
         }
 
         move(delta);
@@ -161,6 +207,21 @@ abstract public class Entity {
         }
 
         updateSprites();
+    }
+
+    // TODO: Replace damage with custom Class 'Attack' holding attack-information
+    public void handleAttack(int damage) {
+        this.health -= damage;
+    }
+
+    public void attack(Entity entity) {
+        entity.handleAttack(this.damage);
+    }
+
+    public void attack(Tile[] tiles) {
+        for (Tile tile : tiles) {
+            tile.handleAttack(this.damage);
+        }
     }
 
     /**
@@ -182,6 +243,31 @@ abstract public class Entity {
     }
 
 
+    public void moveTileUp(float delta) {
+        direction = Direction.UP;
+        int traversed = 0;
+        while (traversed < Tile.WIDTH) {
+            traversed += maxSpeed * delta;
+            translateY((float) maxSpeed * delta);
+            if (traversed > Tile.WIDTH) traversed = Tile.WIDTH;
+        }
+    }
+
+    public void moveTileRight(float delta) {
+        translateX(Tile.WIDTH);
+        direction = Direction.RIGHT;
+    }
+
+    public void moveTileDown(float delta) {
+        translateY(-Tile.WIDTH);
+        direction = Direction.DOWN;
+    }
+
+    public void moveTileLeft(float delta) {
+        translateX(-Tile.WIDTH);
+        direction = Direction.LEFT;
+    }
+
     /**
      * Accelerate in positive X direction and set the Sprite accordingly
      */
@@ -190,7 +276,7 @@ abstract public class Entity {
         if (speedX > maxSpeed) {
             speedX = maxSpeed;
         }
-        setSprite(CommonSprites.RIGHT);
+        direction = Direction.RIGHT;
     }
 
     /**
@@ -201,7 +287,7 @@ abstract public class Entity {
         if (speedX < -maxSpeed) {
             speedX = -maxSpeed;
         }
-        setSprite(CommonSprites.LEFT);
+        direction = Direction.LEFT;
     }
 
     /**
@@ -212,7 +298,7 @@ abstract public class Entity {
         if (speedY > maxSpeed) {
             speedY = maxSpeed;
         }
-        setSprite(CommonSprites.UP);
+        direction = Direction.UP;
     }
 
     /**
@@ -223,7 +309,7 @@ abstract public class Entity {
         if (speedY < -maxSpeed) {
             speedY = -maxSpeed;
         }
-        setSprite(CommonSprites.DOWN);
+        direction = Direction.DOWN;
     }
 
 
@@ -353,6 +439,10 @@ abstract public class Entity {
         this.model.setSprite(this.spriteBaseName + sprite.toString(), this.x, this.y);
     }
 
+    public int getMovement() {
+        return movement;
+    }
+
     public float getHeight() {
         return height;
     }
@@ -389,6 +479,10 @@ abstract public class Entity {
     public void setY(float y) {
         this.y = y;
         this.model.setY(y);
+    }
+
+    public void setInCombat(boolean inCombat) {
+        this.inCombat = inCombat;
     }
 
     public void setCollisionLayer(TiledMapTileLayer collisionLayer) {

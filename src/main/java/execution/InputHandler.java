@@ -17,9 +17,12 @@ public class InputHandler {
 
     public static ArrayList<Integer> keysPressed = new ArrayList<>();
 
+    public static int keyUp;
+
     public void update() {
         // reset all pressed keys
         keysPressed.clear();
+        keyUp = 0;
 
         // mouse handling
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
@@ -41,7 +44,7 @@ public class InputHandler {
         if (game.hud.getConsole().isOn()) return;
 
 
-        // add to list if key is touched
+        // add to list if key is pressed
         if (Gdx.input.isKeyPressed(Keys.LEFT)) {
             keysPressed.add(Keys.LEFT);
         }
@@ -66,6 +69,41 @@ public class InputHandler {
         if (Gdx.input.isKeyPressed(Keys.D)) {
             keysPressed.add(Keys.D);
         }
+
+
+        // Set keyUp if key has just been pressed
+        if (Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
+            keyUp = Keys.RIGHT;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.DOWN)) {
+            keyUp = Keys.DOWN;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.LEFT)) {
+            keyUp = Keys.LEFT;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.UP)) {
+            keyUp = Keys.UP;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.D)) {
+            keyUp = Keys.D;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.S)) {
+            keyUp = Keys.S;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.A)) {
+            keyUp = Keys.A;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Keys.W)) {
+            keyUp = Keys.W;
+        }
+
     }
 
     public static boolean isPressed(int key) {

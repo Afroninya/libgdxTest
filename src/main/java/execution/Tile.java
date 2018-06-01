@@ -35,6 +35,11 @@ public class Tile {
         this.font = new BitmapFont();
     }
 
+    // TODO: Replace damage with custom Class 'Attack' holding attack-information
+    public void handleAttack(int damage) {
+        this.entities.forEach(entity -> entity.handleAttack(damage));
+    }
+
     public void draw(SpriteBatch sb) {
         font.setColor(Color.WHITE);
         sb.draw(texture, tileX*WIDTH, tileY*WIDTH);
