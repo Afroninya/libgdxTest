@@ -16,11 +16,11 @@ public class Console {
     public Console(Game game) {
         this.game = game;
         int xOffset = 10;
-        int yOffset = 60;
+        int yOffset = 40;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        tf.setPosition(xOffset, Config.V_HEIGHT - yOffset);
-        tf.setSize(Config.V_WIDTH - 2 * xOffset, 30);
+        tf.setPosition(xOffset, Config.VIEWPORT_HEIGHT - yOffset);
+        tf.setSize(Config.VIEWPORT_WIDTH - 2 * xOffset, 30);
         stage.addActor(tf);
     }
 

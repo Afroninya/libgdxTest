@@ -247,7 +247,6 @@ abstract public class Entity {
                     if ((!tile.isPassable() && !tile4.isPassable()) || (!tile2.isPassable() && !tile3.isPassable()))
                         speedY = 0;
                 }
-                Gdx.app.debug("Collision", "Player collides.");
             }
             return collisionWithMap;
         } catch (NullPointerException e) {
