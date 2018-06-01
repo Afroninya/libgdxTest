@@ -230,13 +230,13 @@ abstract public class Entity {
     public boolean collides(int x, int y) {
         //Check For Collision
         // bottom left corner
-        Tile tile = game.map.getTilePixel((int) x, (int) y);
+        Tile tile = game.map.getTilePixel(x, y);
         // top right corner
         Tile tile2 = game.map.getTilePixel((int) (x + width), (int) (y + width));
         // top left corner
-        Tile tile3 = game.map.getTilePixel((int) (x), (int) (y + width));
+        Tile tile3 = game.map.getTilePixel(x, (int) (y + width));
         // bottom right corner
-        Tile tile4 = game.map.getTilePixel((int) (x + width), (int) (y));
+        Tile tile4 = game.map.getTilePixel((int) (x + width), y);
         try {
             boolean collisionWithMap = (tile == null) || (!tile.isPassable() || !tile3.isPassable() || !tile2.isPassable() || !tile4.isPassable());
             //React to Collision

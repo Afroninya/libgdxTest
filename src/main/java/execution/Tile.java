@@ -22,7 +22,7 @@ public class Tile {
     private TileType type;
 
     enum TileType {
-        TRUMP, DARKTRUMP;
+        GRASS, STONE
     }
 
     //CONSTRUCTOR
@@ -31,13 +31,13 @@ public class Tile {
         this.tileY = tileY;
         this.type = type;
         switch (type) {
-            case TRUMP:
+            case GRASS:
                 this.passable = true;
-                this.texture = new Texture("textures/trump.jpg");
+                this.texture = new Texture("textures/grass.png");
                 break;
-            case DARKTRUMP:
+            case STONE:
                 this.passable = false;
-                this.texture = new Texture("textures/darktrump.jpg");
+                this.texture = new Texture("textures/stone.png");
                 break;
         }
         entities = new ArrayList<>();
@@ -45,8 +45,11 @@ public class Tile {
     }
 
     public void draw(SpriteBatch sb) {
+        sb.draw(texture, tileX * WIDTH, tileY * WIDTH, WIDTH, WIDTH);
+    }
+
+    public void debugDraw(SpriteBatch sb) {
         font.setColor(Color.WHITE);
-        sb.draw(texture, tileX * WIDTH, tileY * WIDTH);
         font.draw(sb, tileX + ", " + tileY, tileX * WIDTH, tileY * WIDTH + WIDTH);
     }
 

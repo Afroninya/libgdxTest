@@ -1,5 +1,6 @@
 package execution;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
@@ -24,9 +25,9 @@ public class Map {
         for (int x = 0; x < numberOfTilesX; x++) {
             for (int y = 0; y < numberOfTilesY; y++) {
                 if (Math.random() > 0.2) {
-                    tiles.add(new Tile(x, y, Tile.TileType.TRUMP));
+                    tiles.add(new Tile(x, y, Tile.TileType.GRASS));
                 } else {
-                    tiles.add(new Tile(x, y, Tile.TileType.DARKTRUMP));
+                    tiles.add(new Tile(x, y, Tile.TileType.STONE));
                 }
             }
         }
@@ -42,7 +43,14 @@ public class Map {
     }
 
     public void render(SpriteBatch sb) {
+        Texture tex = new Texture("textures/stone.png");
+        tex.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        sb.draw(tex, -5*Tile.WIDTH, -5*Tile.WIDTH, 0, 0, (10+numberOfTilesX) * Tile.WIDTH, (10+numberOfTilesY) * Tile.WIDTH);
         tiles.forEach(tile -> tile.draw(sb));
+    }
+
+    public void debugRender(SpriteBatch sb) {
+        tiles.forEach(tile -> tile.debugDraw(sb));
     }
 
     public Tile getTile(int x, int y) {
@@ -64,7 +72,6 @@ public class Map {
         Tile t;
         do {
             t = getTile(r.nextInt(numberOfTilesX), r.nextInt(numberOfTilesY));
-            if (t == null) continue;
         } while (!t.isPassable());
         return t;
     }

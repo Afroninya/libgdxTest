@@ -45,6 +45,8 @@ public class Console {
                 } catch (NumberFormatException ignored) {
                 }
                 break;
+            case "debug":
+                game.debug = !game.debug;
         }
         tf.setText("");
     }
