@@ -34,7 +34,7 @@ public class Game extends ApplicationAdapter {
         inputHandler = new InputHandler(this);
 
         map = new Map(40, 25);
-        player = new Player();
+        player = new Player(this);
         player.setPosition(map.getStartingTile().getCenterX(), map.getStartingTile().getCenterY());
     }
 
@@ -46,6 +46,7 @@ public class Game extends ApplicationAdapter {
         //update
         delta = Gdx.graphics.getDeltaTime();
         inputHandler.update();
+        map.update(delta);
         player.update(delta);
 
         //update camera position
@@ -55,7 +56,6 @@ public class Game extends ApplicationAdapter {
         cam.update();
 
         //render
-        map.update(delta);
         sb.begin();
         map.render(sb);
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());

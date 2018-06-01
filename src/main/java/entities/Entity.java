@@ -8,11 +8,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import config.ConfigValueProvider;
 import entities.util.CommonSprites;
 import execution.Game;
+import execution.Tile;
 import graphics.Model;
 
 import java.util.MissingResourceException;
 
 abstract public class Entity {
+
+    protected Game game;
 
     protected String spriteBaseName;
     protected String spriteSheet;
@@ -28,6 +31,8 @@ abstract public class Entity {
     protected double speedY;
     protected double maxSpeed;
     protected double acceleration;
+
+    protected boolean phaseMovement;
 
     protected boolean isMoving;
     protected boolean isMovingUp;
@@ -59,7 +64,8 @@ abstract public class Entity {
      * Constructor.
      * Set attributes as specified in Subclass constructor call and initialize the Sprite.
      */
-    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y, int width, int height) {
+    public Entity(Game game, String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y, int width, int height) {
+        this.game = game;
         this.x = x;
         this.y = y;
         this.isMoving = false;
@@ -146,21 +152,18 @@ abstract public class Entity {
                 } else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
                     inertia_y();
                 }
+                move(delta);
+
+                if (collides()) {
+                    setX(oldX);
+                    setY(oldY);
+                }
+                updateSprites();
             } else {
                 phaseOutMovement();
             }
-        } else {
-
         }
 
-        move(delta);
-
-        if (collides()) {
-            setX(oldX);
-            setY(oldY);
-        }
-
-        updateSprites();
     }
 
     /**
@@ -234,25 +237,17 @@ abstract public class Entity {
      */
     public boolean collides() {
         //Check For Collision
-        boolean collisionWithMap = isCellBLocked(x, y);
+        Tile tile = game.map.getTilePixel((int) x, (int) y);
+        Tile tile2 = game.map.getTilePixel((int) (x + width), (int) (y + width));
+        Tile tile3 = game.map.getTilePixel((int) (x), (int) (y + width));
+        Tile tile4 = game.map.getTilePixel((int) (x + width), (int) (y));
+        boolean collisionWithMap = (tile == null) ? true : !tile.isPassable() || !tile2.isPassable() || !tile3.isPassable() || !tile4.isPassable();
 
         //React to Collision
         if (collisionWithMap) {
             Gdx.app.debug("Collision", "Player collides.");
         }
         return collisionWithMap;
-    }
-
-    /**
-     * Check if the specified space is blocked by terrain.
-     *
-     * @param x X location
-     * @param y Y location
-     * @return true if space is blocked
-     */
-    public boolean isCellBLocked(float x, float y) {
-        //TODO: collision
-        return false;
     }
 
     /**

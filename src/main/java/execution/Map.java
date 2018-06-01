@@ -22,7 +22,11 @@ public class Map {
         //fill map with x*y tiles, assign unique coordinates to each of them
         for (int x = 0; x < numberOfTilesX; x++) {
             for (int y = 0; y < numberOfTilesY; y++) {
-                tiles.add(new Tile(x, y, false));
+                if (Math.random() > 0.2) {
+                    tiles.add(new Tile(x, y,Tile.TileType.TRUMP));
+                } else {
+                    tiles.add(new Tile(x, y,Tile.TileType.DARKTRUMP));
+                }
             }
         }
         startingTile = getTile(numberOfTilesX / 2, numberOfTilesY / 2);
@@ -41,7 +45,15 @@ public class Map {
     }
 
     public Tile getTile(int x, int y) {
-        return tiles.get(y + numberOfTilesY * x);
+        try {
+            return tiles.get(y + numberOfTilesY * x);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Tile getTilePixel(int x, int y) {
+        return getTile(x / Tile.WIDTH, y / Tile.WIDTH);
     }
 
     public int getNumberOfTilesX() {

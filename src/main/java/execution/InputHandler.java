@@ -26,6 +26,9 @@ public class InputHandler {
             System.out.println(((int) ((game.player.getX() - ((Config.VIEWPORT_WIDTH / 2) - Gdx.input.getX())) / Tile.WIDTH)) + " " +
                     ((int) ((game.player.getY() - ((Config.VIEWPORT_HEIGHT / 2) - (Config.VIEWPORT_HEIGHT - Gdx.input.getY()))) / Tile.WIDTH)));
         }
+        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+            System.out.println(game.map.getTilePixel((int) game.player.getX(), (int) game.player.getY()));
+        }
 
         // console handling
         if (Gdx.input.isKeyPressed(Keys.T) && !game.hud.getConsole().isOn()) {
