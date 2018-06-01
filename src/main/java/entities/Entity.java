@@ -142,19 +142,15 @@ abstract public class Entity {
             if (isMoving) {
                 if (isMovingRight && !isMovingLeft) {
                     moveRight();
-                    direction = Direction.RIGHT;
                 }
                 if (isMovingLeft && !isMovingRight) {
                     moveLeft();
-                    direction = Direction.LEFT;
                 }
                 if (isMovingUp && !isMovingDown) {
                     moveUp();
-                    direction = Direction.UP;
                 }
                 if (isMovingDown && !isMovingUp) {
                     moveDown();
-                    direction = Direction.DOWN;
                 }
 
                 if (speedX != 0 && (isMovingUp || isMovingDown)) {
@@ -171,30 +167,41 @@ abstract public class Entity {
             speedX = 0;
 
             if (isMoving) {
-                if (destinationY > y) {
+                if (isMovingUp) {
                     if (y < destinationY - maxSpeed * delta) speedY = maxSpeed;
                     else {
                         speedY = (destinationY - y) / delta;
                         isMoving = false;
+                        isMovingUp = false;
                     }
-                } else if (destinationY < y) {
+                    direction = Direction.UP;
+                }
+                if (isMovingDown) {
                     if (y > destinationY + maxSpeed * delta) speedY = -maxSpeed;
                     else {
                         speedY = (destinationY - y) / delta;
                         isMoving = false;
+                        isMovingDown = false;
                     }
-                } else if (destinationX > x) {
+                    direction = Direction.DOWN;
+                }
+                if (isMovingRight) {
                     if (x < destinationX - maxSpeed * delta) speedX = maxSpeed;
                     else {
                         speedX = (destinationX - x) / delta;
                         isMoving = false;
+                        isMovingRight = false;
                     }
-                } else {
+                    direction = Direction.RIGHT;
+                }
+                if (isMovingLeft){
                     if (x > destinationX + maxSpeed * delta) speedX = -maxSpeed;
                     else {
                         speedX = (destinationX - x) / delta;
                         isMoving = false;
+                        isMovingLeft = false;
                     }
+                    direction = Direction.LEFT;
                 }
             }
         }

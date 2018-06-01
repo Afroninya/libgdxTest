@@ -32,20 +32,28 @@ public class Player extends LivingEntity {
             isMovingLeft = (InputHandler.isPressed(Input.Keys.A) && !InputHandler.isPressed(Input.Keys.D));
         } else {
             if (!isMoving && (InputHandler.keyUp == Input.Keys.W && !(InputHandler.keyUp == Input.Keys.S))) {
+                isMovingUp = true;
                 isMoving = true;
                 destinationY = y + Tile.WIDTH;
+                destinationX = x;
             }
             if (!isMoving && (InputHandler.keyUp == Input.Keys.S && !(InputHandler.keyUp == Input.Keys.W))) {
+                isMovingDown = true;
                 isMoving = true;
                 destinationY = y - Tile.WIDTH;
+                destinationX = x;
             }
             if (!isMoving && (InputHandler.keyUp == Input.Keys.D && !(InputHandler.keyUp == Input.Keys.A))) {
+                isMovingRight = true;
                 isMoving = true;
                 destinationX = x + Tile.WIDTH;
+                destinationY = y;
             }
             if (!isMoving && (InputHandler.keyUp == Input.Keys.A && !(InputHandler.keyUp == Input.Keys.D))) {
+                isMovingLeft = true;
                 isMoving = true;
                 destinationX = x - Tile.WIDTH;
+                destinationY = y;
             }
         }
     }
