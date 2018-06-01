@@ -121,10 +121,7 @@ abstract public class Entity {
      * @param delta the amount of time between frames in seconds.
      */
     public void update(float delta) {
-        float oldX = x;
-        float oldY = y;
         // update player movement
-
         handleMovement();
 
         if (!inCombat) {
@@ -153,11 +150,6 @@ abstract public class Entity {
                     inertia_y();
                 }
                 move(delta);
-
-                if (collides()) {
-                    setX(oldX);
-                    setY(oldY);
-                }
                 updateSprites();
             } else {
                 phaseOutMovement();
@@ -235,19 +227,33 @@ abstract public class Entity {
      *
      * @return true if a collision occured
      */
-    public boolean collides() {
+    public boolean collides(int x, int y) {
         //Check For Collision
+        // bottom left corner
         Tile tile = game.map.getTilePixel((int) x, (int) y);
+        // top right corner
         Tile tile2 = game.map.getTilePixel((int) (x + width), (int) (y + width));
+        // top left corner
         Tile tile3 = game.map.getTilePixel((int) (x), (int) (y + width));
+        // bottom right corner
         Tile tile4 = game.map.getTilePixel((int) (x + width), (int) (y));
-        boolean collisionWithMap = (tile == null) ? true : !tile.isPassable() || !tile2.isPassable() || !tile3.isPassable() || !tile4.isPassable();
-
-        //React to Collision
-        if (collisionWithMap) {
-            Gdx.app.debug("Collision", "Player collides.");
+        try {
+            boolean collisionWithMap = (tile == null) || (!tile.isPassable() || !tile3.isPassable() || !tile2.isPassable() || !tile4.isPassable());
+            //React to Collision
+            if (collisionWithMap) {
+                if (speedX != 0 && speedY != 0) {
+                    if ((!tile.isPassable() && !tile3.isPassable()) || (!tile2.isPassable() && !tile4.isPassable()))
+                        speedX = 0;
+                    if ((!tile.isPassable() && !tile4.isPassable()) || (!tile2.isPassable() && !tile3.isPassable()))
+                        speedY = 0;
+                }
+                Gdx.app.debug("Collision", "Player collides.");
+            }
+            return collisionWithMap;
+        } catch (NullPointerException e) {
+            //in case any of the tiles is outside of the map
+            return true;
         }
-        return collisionWithMap;
     }
 
     /**
@@ -303,8 +309,10 @@ abstract public class Entity {
         double x_speedMod = angle / 90;
         double y_speedMod = 1 - (angle / 90);
 
-        translateX((float) (x * x_speedMod) * delta);
-        translateY((float) (y * y_speedMod) * delta);
+        float xTranslate = (float) (x * x_speedMod) * delta;
+        float yTranslate = (float) (y * y_speedMod) * delta;
+        translateX(xTranslate);
+        translateY(yTranslate);
     }
 
     /**
@@ -313,6 +321,7 @@ abstract public class Entity {
      * @param x X amount
      */
     public void translateX(float x) {
+        if (collides((int) (this.x + x), (int) y)) return;
         this.x += x;
         this.model.setX(this.x);
     }
@@ -323,6 +332,7 @@ abstract public class Entity {
      * @param y Y amount
      */
     public void translateY(float y) {
+        if (collides((int) x, (int) (this.y + y))) return;
         this.y += y;
         this.model.setY(this.y);
     }

@@ -3,6 +3,7 @@ package execution;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Map {
 
@@ -23,13 +24,13 @@ public class Map {
         for (int x = 0; x < numberOfTilesX; x++) {
             for (int y = 0; y < numberOfTilesY; y++) {
                 if (Math.random() > 0.2) {
-                    tiles.add(new Tile(x, y,Tile.TileType.TRUMP));
+                    tiles.add(new Tile(x, y, Tile.TileType.TRUMP));
                 } else {
-                    tiles.add(new Tile(x, y,Tile.TileType.DARKTRUMP));
+                    tiles.add(new Tile(x, y, Tile.TileType.DARKTRUMP));
                 }
             }
         }
-        startingTile = getTile(numberOfTilesX / 2, numberOfTilesY / 2);
+        startingTile = getRandomUnoccupiedTile();
     }
 
     public Tile getStartingTile() {
@@ -45,6 +46,7 @@ public class Map {
     }
 
     public Tile getTile(int x, int y) {
+        if (x < 0 || y < 0 || x > numberOfTilesX - 1 || y > numberOfTilesY - 1) return null;
         try {
             return tiles.get(y + numberOfTilesY * x);
         } catch (Exception e) {
@@ -53,7 +55,18 @@ public class Map {
     }
 
     public Tile getTilePixel(int x, int y) {
+        if (x < 0 || y < 0) return null;
         return getTile(x / Tile.WIDTH, y / Tile.WIDTH);
+    }
+
+    public Tile getRandomUnoccupiedTile() {
+        Random r = new Random();
+        Tile t;
+        do {
+            t = getTile(r.nextInt(numberOfTilesX), r.nextInt(numberOfTilesY));
+            if (t == null) continue;
+        } while (!t.isPassable());
+        return t;
     }
 
     public int getNumberOfTilesX() {
