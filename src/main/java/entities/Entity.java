@@ -46,8 +46,8 @@ abstract public class Entity {
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
-    protected boolean inCombat = false;
-    protected boolean inMovementPhase = false;
+    protected boolean inCombat;
+    protected boolean inMovementPhase;
 
     protected int combatTilesTraveledX;
     protected int combatTilesTraveledY;
@@ -165,7 +165,6 @@ abstract public class Entity {
      */
     public void render(SpriteBatch sb) {
         stateTime += Gdx.graphics.getDeltaTime();
-        executeTurn();
         // Get current frame of animation for the current stateTime
         TextureRegion tr;
         if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
@@ -518,6 +517,10 @@ abstract public class Entity {
 
     public void setInCombat(boolean inCombat) {
         this.inCombat = inCombat;
+    }
+
+    public void setInMovementPhase(boolean inMovementPhase) {
+        this.inMovementPhase = inMovementPhase;
     }
 
     public void setCollisionLayer(TiledMapTileLayer collisionLayer) {

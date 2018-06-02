@@ -36,8 +36,11 @@ public class Console {
         switch (input[0].toLowerCase()) {
             //add console input cases here
             case "pos":
+                break;
             case "position":
+                break;
             case "teleport":
+                break;
             case "tp":
                 try {
                     game.player.setX(Integer.parseInt(input[1]));
@@ -47,6 +50,15 @@ public class Console {
                 break;
             case "debug":
                 game.debug = !game.debug;
+                break;
+            case "combat":
+                game.player.setInCombat(true);
+                game.player.setInMovementPhase(true);
+                break;
+            case "endcombat":
+                game.player.setInCombat(false);
+                game.player.setInMovementPhase(false);
+                break;
         }
         tf.setText("");
     }
