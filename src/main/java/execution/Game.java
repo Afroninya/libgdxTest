@@ -35,7 +35,7 @@ public class Game extends ApplicationAdapter {
 
         map = new Map(40, 25);
         player = new Player();
-        player.setPosition(map.getStartingTile().getCenterX(), map.getStartingTile().getCenterY());
+        player.setPosition(map.getStartingTile().getCenterX() - player.getWidth() / 2, map.getStartingTile().getCenterY() - player.getHeight() / 4);
     }
 
     @Override

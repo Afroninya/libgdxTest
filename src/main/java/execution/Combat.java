@@ -33,7 +33,7 @@ public class Combat {
 
     public void render(SpriteBatch sb) {
         this.map.render(sb);
-        this.player.setPosition(0, 0);
+        this.player.setPosition(Tile.WIDTH / 2 - player.getWidth() / 2, Tile.WIDTH / 2 - player.getHeight() / 2);
         this.enemy.setPosition(map.getNumberOfTilesX() * Tile.WIDTH, map.getNumberOfTilesY() * Tile.WIDTH);
     }
 

@@ -14,6 +14,8 @@ import graphics.Model;
 import java.util.MissingResourceException;
 
 abstract public class Entity {
+    
+    private final int COMBAT_MOVEMENT_SPEED = 300;
 
     protected String spriteBaseName;
     protected String spriteSheet;
@@ -40,17 +42,19 @@ abstract public class Entity {
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
-    protected boolean inMovementPhase = true;
+    protected boolean inCombat = false;
+    protected boolean inMovementPhase = false;
+
+    protected int combatTilesTraveledX;
+    protected int combatTilesTraveledY;
 
     protected float destinationX;
     protected float destinationY;
 
-    protected boolean inCombat = true;
-
     //0 up, 1 left, 2 down, 3 right
-    private Direction direction = Direction.DOWN;
+    protected Direction direction = Direction.DOWN;
 
-    private enum Direction {
+    protected enum Direction {
         UP, LEFT, RIGHT, DOWN
     }
 
@@ -63,6 +67,8 @@ abstract public class Entity {
      * "isMoving", "isMovingUp", "isMovingDown", "isMovingRight", "isMovingLeft"
      */
     public abstract void handleMovement();
+    
+    public abstract void handleCombatMovement();
 
     public abstract void executeTurn();
 
@@ -87,43 +93,6 @@ abstract public class Entity {
         initModel(x, y, spriteSheet, initialSprite, width, height);
     }
 
-    /**
-     * Initialize the Sprite
-     *
-     * @param x             initial X position
-     * @param y             initial Y position
-     * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
-     * @param initialSprite the texture file name (e.g. "player_down")
-     */
-    private void initModel(float x, float y, String spriteSheet, String initialSprite, int width, int height) {
-        if (spriteSheet == null) {
-            final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String className = stackTrace[3].getClassName().toLowerCase().split("\\.")[1];
-
-            try {
-                this.spriteSheet = ConfigValueProvider.getSpritesLocation(className);
-                this.spriteBaseName = className;
-                this.defaultSprite = className + "_middle";
-            } catch (MissingResourceException e) {
-                e.printStackTrace();
-                System.out.println("No Spritesheet found for Entity " + className);
-                throw (e);
-            }
-        } else {
-            if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
-                this.defaultSprite = spriteSheet + CommonSprites.DOWN;
-            } else {
-                this.defaultSprite = initialSprite;
-            }
-            this.spriteBaseName = spriteSheet;
-            this.spriteSheet = ConfigValueProvider.getSpritesLocation(spriteSheet);
-        }
-
-        this.collisionLayer = Game.collisionLayer;
-
-        this.model = new Model(this.spriteSheet, defaultSprite, x, y, 0, width, height);
-    }
-
 
     /**
      * The engines update method. Called once every game tick / frame.
@@ -134,75 +103,34 @@ abstract public class Entity {
         float oldX = x;
         float oldY = y;
         // update player movement
-
-        handleMovement();
-
+        
         if (!inCombat) {
 
-            if (isMoving) {
-                if (isMovingRight && !isMovingLeft) {
-                    moveRight();
-                }
-                if (isMovingLeft && !isMovingRight) {
-                    moveLeft();
-                }
-                if (isMovingUp && !isMovingDown) {
-                    moveUp();
-                }
-                if (isMovingDown && !isMovingUp) {
-                    moveDown();
-                }
+            handleMovement();
 
-                if (speedX != 0 && (isMovingUp || isMovingDown)) {
-                    inertia_x();
-                } else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
-                    inertia_y();
-                }
-            } else {
-                phaseOutMovement();
-            }
+            if (isMoving) {
+
+                if (isMovingRight && !isMovingLeft) moveRight();
+                if (isMovingLeft && !isMovingRight) moveLeft();
+                if (isMovingUp && !isMovingDown) moveUp();
+                if (isMovingDown && !isMovingUp) moveDown();
+
+                if (speedX != 0 && (isMovingUp || isMovingDown)) inertia_x();
+                else if (speedY != 0 && (isMovingRight || isMovingLeft)) inertia_y();
+
+            } else phaseOutMovement();
 
         } else if (inMovementPhase) {
             speedY = 0;
             speedX = 0;
+            
+            handleCombatMovement();
 
             if (isMoving) {
-                if (isMovingUp) {
-                    if (y < destinationY - maxSpeed * delta) speedY = maxSpeed;
-                    else {
-                        speedY = (destinationY - y) / delta;
-                        isMoving = false;
-                        isMovingUp = false;
-                    }
-                    direction = Direction.UP;
-                }
-                if (isMovingDown) {
-                    if (y > destinationY + maxSpeed * delta) speedY = -maxSpeed;
-                    else {
-                        speedY = (destinationY - y) / delta;
-                        isMoving = false;
-                        isMovingDown = false;
-                    }
-                    direction = Direction.DOWN;
-                }
-                if (isMovingRight) {
-                    if (x < destinationX - maxSpeed * delta) speedX = maxSpeed;
-                    else {
-                        speedX = (destinationX - x) / delta;
-                        isMoving = false;
-                        isMovingRight = false;
-                    }
-                    direction = Direction.RIGHT;
-                }
-                if (isMovingLeft){
-                    if (x > destinationX + maxSpeed * delta) speedX = -maxSpeed;
-                    else {
-                        speedX = (destinationX - x) / delta;
-                        isMoving = false;
-                        isMovingLeft = false;
-                    }
-                    direction = Direction.LEFT;
-                }
+                if (isMovingUp) moveTileUp(delta);
+                if (isMovingDown) moveTileDown(delta);
+                if (isMovingRight)  moveTileRight(delta);
+                if (isMovingLeft) moveTileLeft(delta);
             }
         }
 
@@ -238,7 +166,7 @@ abstract public class Entity {
      */
     public void render(SpriteBatch sb) {
         stateTime += Gdx.graphics.getDeltaTime();
-
+        executeTurn();
         // Get current frame of animation for the current stateTime
         TextureRegion tr;
         if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
@@ -250,28 +178,59 @@ abstract public class Entity {
     }
 
 
+    /**
+     * Set an Entity's speed for it to move exactly one Tile up
+     * @param delta delta
+     */
     public void moveTileUp(float delta) {
-        direction = Direction.UP;
-        int traversed = 0;
-        while (traversed < Tile.WIDTH) {
-            traversed += maxSpeed * delta;
-            translateY((float) maxSpeed * delta);
-            if (traversed > Tile.WIDTH) traversed = Tile.WIDTH;
+        if (y < destinationY - COMBAT_MOVEMENT_SPEED * delta) speedY = COMBAT_MOVEMENT_SPEED;
+        else {
+            speedY = (destinationY - y) / delta;
+            isMoving = false;
+            isMovingUp = false;
         }
+        direction = Direction.UP;
     }
 
+    /**
+     * Set an Entity's speed for it to move exactly one Tile right
+     * @param delta delta
+     */
     public void moveTileRight(float delta) {
-        translateX(Tile.WIDTH);
+        if (x < destinationX - COMBAT_MOVEMENT_SPEED * delta) speedX = COMBAT_MOVEMENT_SPEED;
+        else {
+            speedX = (destinationX - x) / delta;
+            isMoving = false;
+            isMovingRight = false;
+        }
         direction = Direction.RIGHT;
     }
 
+    /**
+     * Set an Entity's speed for it to move exactly one Tile down
+     * @param delta delta
+     */
     public void moveTileDown(float delta) {
-        translateY(-Tile.WIDTH);
+        if (y > destinationY + COMBAT_MOVEMENT_SPEED * delta) speedY = -COMBAT_MOVEMENT_SPEED;
+        else {
+            speedY = (destinationY - y) / delta;
+            isMoving = false;
+            isMovingDown = false;
+        }
         direction = Direction.DOWN;
     }
 
+    /**
+     * Set an Entity's speed for it to move exactly one Tile left
+     * @param delta delta
+     */
     public void moveTileLeft(float delta) {
-        translateX(-Tile.WIDTH);
+        if (x > destinationX + COMBAT_MOVEMENT_SPEED * delta) speedX = -COMBAT_MOVEMENT_SPEED;
+        else {
+            speedX = (destinationX - x) / delta;
+            isMoving = false;
+            isMovingLeft = false;
+        }
         direction = Direction.LEFT;
     }
 
@@ -317,6 +276,32 @@ abstract public class Entity {
             speedY = -maxSpeed;
         }
         direction = Direction.DOWN;
+    }
+
+    /**
+     * Set movement destination relative to the entity's current position.
+     * @param x X destination
+     * @param y Y destination
+     */
+    public void setDestination(float x, float y) {
+        isMoving = true;
+        destinationX = this.x + x;
+        destinationY = this.y + y;
+
+        if (y > 0) {
+            isMovingUp = true;
+            combatTilesTraveledY += 1;
+        } else if (y < 0) {
+            isMovingDown = true;
+            combatTilesTraveledY -= 1;
+        }
+        if (x > 0) {
+            isMovingRight = true;
+            combatTilesTraveledX += 1;
+        } else if (x < 0) {
+            isMovingLeft = true;
+            combatTilesTraveledX -= 1;
+        }
     }
 
 
@@ -388,21 +373,21 @@ abstract public class Entity {
     }
 
     /**
-     * Move by a specified amount
+     * Move with specified speed
      *
-     * @param x     X amount
-     * @param y     Y amount
+     * @param speedX     X speed
+     * @param speedY     Y speed
      * @param delta frame based movement scaling
      */
-    public void move(double x, double y, float delta) {
-        double hypo = Math.hypot(x, y);
-        double angle = (x == 0 && y == 0) ? 0 : Math.round(Math.toDegrees(Math.asin(Math.abs(x) / hypo)));
+    public void move(double speedX, double speedY, float delta) {
+        double hypo = Math.hypot(speedX, speedY);
+        double angle = (speedX == 0 && speedY == 0) ? 0 : Math.round(Math.toDegrees(Math.asin(Math.abs(speedX) / hypo)));
 
         double x_speedMod = angle / 90;
         double y_speedMod = 1 - (angle / 90);
 
-        translateX((float) (x * x_speedMod) * delta);
-        translateY((float) (y * y_speedMod) * delta);
+        translateX((float) (speedX * x_speedMod) * delta);
+        translateY((float) (speedY * y_speedMod) * delta);
     }
 
     /**
@@ -435,6 +420,43 @@ abstract public class Entity {
      */
     public void updateSprites() {
         this.model.getSprites().values().forEach(x -> x.setPosition(this.x, this.y));
+    }
+
+    /**
+     * Initialize the Sprite
+     *
+     * @param x             initial X position
+     * @param y             initial Y position
+     * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
+     * @param initialSprite the texture file name (e.g. "player_down")
+     */
+    private void initModel(float x, float y, String spriteSheet, String initialSprite, int width, int height) {
+        if (spriteSheet == null) {
+            final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            String className = stackTrace[3].getClassName().toLowerCase().split("\\.")[1];
+
+            try {
+                this.spriteSheet = ConfigValueProvider.getSpritesLocation(className);
+                this.spriteBaseName = className;
+                this.defaultSprite = className + "_middle";
+            } catch (MissingResourceException e) {
+                e.printStackTrace();
+                System.out.println("No Spritesheet found for Entity " + className);
+                throw (e);
+            }
+        } else {
+            if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
+                this.defaultSprite = spriteSheet + CommonSprites.DOWN;
+            } else {
+                this.defaultSprite = initialSprite;
+            }
+            this.spriteBaseName = spriteSheet;
+            this.spriteSheet = ConfigValueProvider.getSpritesLocation(spriteSheet);
+        }
+
+        this.collisionLayer = Game.collisionLayer;
+
+        this.model = new Model(this.spriteSheet, defaultSprite, x, y, 0, width, height);
     }
 
     /**
