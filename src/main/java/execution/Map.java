@@ -1,8 +1,10 @@
 package execution;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Map {
 
@@ -22,10 +24,14 @@ public class Map {
         //fill map with x*y tiles, assign unique coordinates to each of them
         for (int x = 0; x < numberOfTilesX; x++) {
             for (int y = 0; y < numberOfTilesY; y++) {
-                tiles.add(new Tile(x, y, false));
+                if (Math.random() > 0.2) {
+                    tiles.add(new Tile(x, y, Tile.TileType.GRASS));
+                } else {
+                    tiles.add(new Tile(x, y, Tile.TileType.STONE));
+                }
             }
         }
-        startingTile = getTile(numberOfTilesX / 2, numberOfTilesY / 2);
+        startingTile = getRandomUnoccupiedTile();
     }
 
     public Tile getStartingTile() {
@@ -37,11 +43,37 @@ public class Map {
     }
 
     public void render(SpriteBatch sb) {
+        Texture tex = new Texture("textures/stone.png");
+        tex.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        sb.draw(tex, -5*Tile.WIDTH, -5*Tile.WIDTH, 0, 0, (10+numberOfTilesX) * Tile.WIDTH, (10+numberOfTilesY) * Tile.WIDTH);
         tiles.forEach(tile -> tile.draw(sb));
     }
 
+    public void debugRender(SpriteBatch sb) {
+        tiles.forEach(tile -> tile.debugDraw(sb));
+    }
+
     public Tile getTile(int x, int y) {
-        return tiles.get(y + numberOfTilesY * x);
+        if (x < 0 || y < 0 || x > numberOfTilesX - 1 || y > numberOfTilesY - 1) return null;
+        try {
+            return tiles.get(y + numberOfTilesY * x);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Tile getTilePixel(int x, int y) {
+        if (x < 0 || y < 0) return null;
+        return getTile(x / Tile.WIDTH, y / Tile.WIDTH);
+    }
+
+    public Tile getRandomUnoccupiedTile() {
+        Random r = new Random();
+        Tile t;
+        do {
+            t = getTile(r.nextInt(numberOfTilesX), r.nextInt(numberOfTilesY));
+        } while (!t.isPassable());
+        return t;
     }
 
     public int getNumberOfTilesX() {

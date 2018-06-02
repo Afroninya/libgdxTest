@@ -19,18 +19,27 @@ public class Tile {
     //the entities that currently reside on the tile
     public ArrayList<Entity> entities;
     private BitmapFont font;
+    private TileType type;
 
     enum TileType {
-        GRASS, STONE, TRUMP;
+        GRASS, STONE
     }
 
     //CONSTRUCTOR
-    public Tile(int tileX, int tileY, boolean passable) {
+    public Tile(int tileX, int tileY, TileType type) {
         this.tileX = tileX;
         this.tileY = tileY;
-        this.passable = passable;
-        this.texture = new Texture("textures/trump.jpg");
-        //TODO: assign texture
+        this.type = type;
+        switch (type) {
+            case GRASS:
+                this.passable = true;
+                this.texture = new Texture("textures/grass.png");
+                break;
+            case STONE:
+                this.passable = false;
+                this.texture = new Texture("textures/stone.png");
+                break;
+        }
         entities = new ArrayList<>();
         this.font = new BitmapFont();
     }
@@ -41,11 +50,12 @@ public class Tile {
     }
 
     public void draw(SpriteBatch sb) {
+        sb.draw(texture, tileX * WIDTH, tileY * WIDTH, WIDTH, WIDTH);
+    }
+
+    public void debugDraw(SpriteBatch sb) {
         font.setColor(Color.WHITE);
-        sb.draw(texture, tileX*WIDTH, tileY*WIDTH);
-        font.draw(sb, tileX + ", " + tileY, tileX*WIDTH, tileY*WIDTH+WIDTH);
-        //TODO: calculate pixelX and pixelY
-        //TODO: draw texture at pixelX, pixelY with size WIDTH*WIDTH
+        font.draw(sb, tileX + ", " + tileY, tileX * WIDTH, tileY * WIDTH + WIDTH);
     }
 
     public void update(float delta) {
@@ -72,5 +82,9 @@ public class Tile {
 
     public String toString() {
         return "Tile {" + tileX + " | " + tileY + ", passable=" + passable + "}";
+    }
+
+    public boolean isPassable() {
+        return passable;
     }
 }

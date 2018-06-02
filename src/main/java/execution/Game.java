@@ -6,12 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import config.Config;
-import config.ConfigValueProvider;
 import entities.Player;
 
 public class Game extends ApplicationAdapter {
@@ -23,6 +19,7 @@ public class Game extends ApplicationAdapter {
     private InputHandler inputHandler;
     private float delta;
     public Map map;
+    public boolean debug;
 
     @Override
     public void create() {
@@ -34,7 +31,7 @@ public class Game extends ApplicationAdapter {
         inputHandler = new InputHandler(this);
 
         map = new Map(40, 25);
-        player = new Player();
+        player = new Player(this);
         player.setPosition(map.getStartingTile().getCenterX() - player.getWidth() / 2, map.getStartingTile().getCenterY() - player.getHeight() / 4);
     }
 
@@ -46,6 +43,7 @@ public class Game extends ApplicationAdapter {
         //update
         delta = Gdx.graphics.getDeltaTime();
         inputHandler.update();
+        map.update(delta);
         player.update(delta);
 
         //update camera position
@@ -55,9 +53,9 @@ public class Game extends ApplicationAdapter {
         cam.update();
 
         //render
-        map.update(delta);
         sb.begin();
         map.render(sb);
+        if (debug) map.debugRender(sb);
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
         sb.end();

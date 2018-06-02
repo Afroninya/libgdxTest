@@ -2,12 +2,12 @@ package entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import entities.util.CommonSprites;
+import execution.Game;
 import execution.InputHandler;
 import execution.Tile;
 
@@ -20,14 +20,14 @@ public class Player extends LivingEntity {
     private float movementOriginX = -1;
     private float movementOriginY;
 
-    public Player() {
+    public Player(Game game) {
         //350 and 100 are the start values for the player. don't knowsn
-        this(DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 15, (short) 300, 10, 5, 350, 150, 32, 48);
+        this(game, DEFAULT_SPRITE_SHEET, DEFAULT_INITIAL_SPRITE, "player", (short) 100, (short) 15, (short) 300, 10, 5, 350, 150, 32, 48);
     }
 
-    public Player(String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, int damage,
+    public Player(Game game, String spriteSheet, String initialSprite, String name, short health, short acceleration, short maxSpeed, int damage,
                   int movement, float x, float y, int width, int height) {
-        super(spriteSheet, initialSprite, name, health, acceleration, maxSpeed, damage, movement, x, y, width, height);
+        super(game, spriteSheet, initialSprite, name, health, acceleration, maxSpeed, damage, movement, x, y, width, height);
     }
 
 
@@ -99,7 +99,7 @@ public class Player extends LivingEntity {
             movementOriginX = x;
             movementOriginY = y;
         }
-        
+
         float textureOriginX = movementOriginX + width / 2 - Tile.WIDTH / 2;
         float textureOriginY = movementOriginY + height / 4 - Tile.WIDTH / 2;
 

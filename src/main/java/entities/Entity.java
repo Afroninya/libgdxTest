@@ -14,8 +14,10 @@ import graphics.Model;
 import java.util.MissingResourceException;
 
 abstract public class Entity {
-    
+
     private final int COMBAT_MOVEMENT_SPEED = 300;
+
+    protected Game game;
 
     protected String spriteBaseName;
     protected String spriteSheet;
@@ -35,6 +37,8 @@ abstract public class Entity {
     protected double health;
     protected int damage;
     protected int movement;
+
+    protected boolean phaseMovement;
 
     protected boolean isMoving;
     protected boolean isMovingUp;
@@ -67,7 +71,7 @@ abstract public class Entity {
      * "isMoving", "isMovingUp", "isMovingDown", "isMovingRight", "isMovingLeft"
      */
     public abstract void handleMovement();
-    
+
     public abstract void handleCombatMovement();
 
     public abstract void executeTurn();
@@ -77,8 +81,9 @@ abstract public class Entity {
      * Constructor.
      * Set attributes as specified in Subclass constructor call and initialize the Sprite.
      */
-    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, double health, int damage,
+    public Entity(Game game, String spriteSheet, String initialSprite, short acceleration, short maxSpeed, double health, int damage,
                   int movement, float x, float y, int width, int height) {
+        this.game = game;
         this.x = x;
         this.y = y;
         this.isMoving = false;
@@ -100,10 +105,8 @@ abstract public class Entity {
      * @param delta the amount of time between frames in seconds.
      */
     public void update(float delta) {
-        float oldX = x;
-        float oldY = y;
         // update player movement
-        
+
         if (!inCombat) {
 
             handleMovement();
@@ -123,7 +126,7 @@ abstract public class Entity {
         } else if (inMovementPhase) {
             speedY = 0;
             speedX = 0;
-            
+
             handleCombatMovement();
 
             if (isMoving) {
@@ -136,13 +139,9 @@ abstract public class Entity {
 
         move(delta);
 
-        if (collides()) {
-            setX(oldX);
-            setY(oldY);
-        }
-
         updateSprites();
     }
+
 
     // TODO: Replace damage with custom Class 'Attack' holding attack-information
     public void handleAttack(int damage) {
@@ -310,27 +309,32 @@ abstract public class Entity {
      *
      * @return true if a collision occured
      */
-    public boolean collides() {
+    public boolean collides(int x, int y) {
         //Check For Collision
-        boolean collisionWithMap = isCellBLocked(x, y);
-
-        //React to Collision
-        if (collisionWithMap) {
-            Gdx.app.debug("Collision", "Player collides.");
+        // bottom left corner
+        Tile tile = game.map.getTilePixel(x, y);
+        // top right corner
+        Tile tile2 = game.map.getTilePixel((int) (x + width), (int) (y + width));
+        // top left corner
+        Tile tile3 = game.map.getTilePixel(x, (int) (y + width));
+        // bottom right corner
+        Tile tile4 = game.map.getTilePixel((int) (x + width), y);
+        try {
+            boolean collisionWithMap = (tile == null) || (!tile.isPassable() || !tile3.isPassable() || !tile2.isPassable() || !tile4.isPassable());
+            //React to Collision
+            if (collisionWithMap) {
+                if (speedX != 0 && speedY != 0) {
+                    if ((!tile.isPassable() && !tile3.isPassable()) || (!tile2.isPassable() && !tile4.isPassable()))
+                        speedX = 0;
+                    if ((!tile.isPassable() && !tile4.isPassable()) || (!tile2.isPassable() && !tile3.isPassable()))
+                        speedY = 0;
+                }
+            }
+            return collisionWithMap;
+        } catch (NullPointerException e) {
+            //in case any of the tiles is outside of the map
+            return true;
         }
-        return collisionWithMap;
-    }
-
-    /**
-     * Check if the specified space is blocked by terrain.
-     *
-     * @param x X location
-     * @param y Y location
-     * @return true if space is blocked
-     */
-    public boolean isCellBLocked(float x, float y) {
-        //TODO: collision
-        return false;
     }
 
     /**
@@ -396,6 +400,7 @@ abstract public class Entity {
      * @param x X amount
      */
     public void translateX(float x) {
+        if (collides((int) (this.x + x), (int) y)) return;
         this.x += x;
         this.model.setX(this.x);
     }
@@ -406,6 +411,7 @@ abstract public class Entity {
      * @param y Y amount
      */
     public void translateY(float y) {
+        if (collides((int) x, (int) (this.y + y))) return;
         this.y += y;
         this.model.setY(this.y);
     }
