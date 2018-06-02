@@ -63,8 +63,8 @@ public class Model {
      */
     private void initTextures(String spriteSheet, String defaultSprite, float x, float y, int width, int height) {
         if (spriteSheet != null && spriteSheet.endsWith(".atlas")) {
-            sprites = new HashMap<String, Sprite>();
-            animations = new HashMap<String, Animation<TextureRegion>>();
+            sprites = new HashMap<>();
+            animations = new HashMap<>();
             this.textureAtlas = new TextureAtlas(Gdx.files.internal(spriteSheet));
 
             textureAtlas.getRegions().forEach(element -> {
@@ -73,10 +73,10 @@ public class Model {
                 sprites.put(element.name, tmpSprite);
             });
 
-            animations.put("down", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_down"), Animation.PlayMode.LOOP));
-            animations.put("up", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
-            animations.put("left", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
-            animations.put("right", new Animation<TextureRegion>(0.2f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
+            animations.put("down", new Animation<>(0.2f, textureAtlas.findRegions("player_down"), Animation.PlayMode.LOOP));
+            animations.put("up", new Animation<>(0.2f, textureAtlas.findRegions("player_up"), Animation.PlayMode.LOOP));
+            animations.put("left", new Animation<>(0.2f, textureAtlas.findRegions("player_left"), Animation.PlayMode.LOOP));
+            animations.put("right", new Animation<>(0.2f, textureAtlas.findRegions("player_right"), Animation.PlayMode.LOOP));
             setSprite(defaultSprite);
         }
     }
@@ -102,7 +102,7 @@ public class Model {
     // Getter
 
     public Map<String, Float> getCenter() {
-        HashMap<String, Float> hmap = new HashMap<String, Float>();
+        HashMap<String, Float> hmap = new HashMap<>();
         hmap.put("x", x + width / 2);
         hmap.put("y", y + height / 2);
         return hmap;

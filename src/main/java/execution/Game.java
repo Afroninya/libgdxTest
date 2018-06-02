@@ -6,12 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import config.Config;
-import config.ConfigValueProvider;
 import entities.Player;
 
 public class Game extends ApplicationAdapter {
@@ -22,8 +18,8 @@ public class Game extends ApplicationAdapter {
     private OrthographicCamera cam;
     private InputHandler inputHandler;
     private float delta;
-    private TiledMap tileMap, collisionMap;
-    private OrthogonalTiledMapRenderer tileMapRenderer, collisionMapRenderer;
+    public Map map;
+    public boolean debug;
 
     @Override
     public void create() {
@@ -34,15 +30,9 @@ public class Game extends ApplicationAdapter {
         hud = new HUD(this);
         inputHandler = new InputHandler(this);
 
-        //load tilemap
-        tileMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1.tmx");
-        tileMapRenderer = new OrthogonalTiledMapRenderer(tileMap);
-
-        //load collision map
-        collisionMap = new TmxMapLoader().load(ConfigValueProvider.LEVEL1 + "level1_collision.tmx");
-        collisionMapRenderer = new OrthogonalTiledMapRenderer(collisionMap);
-        collisionLayer = (TiledMapTileLayer) collisionMap.getLayers().get("Kachelebene 1");
-        player = new Player();
+        map = new Map(40, 25);
+        player = new Player(this);
+        player.setPosition(map.getStartingTile().getCenterX() - player.getWidth() / 2, map.getStartingTile().getCenterY() - player.getHeight() / 4);
     }
 
     @Override
@@ -53,6 +43,7 @@ public class Game extends ApplicationAdapter {
         //update
         delta = Gdx.graphics.getDeltaTime();
         inputHandler.update();
+        map.update(delta);
         player.update(delta);
 
         //update camera position
@@ -62,11 +53,9 @@ public class Game extends ApplicationAdapter {
         cam.update();
 
         //render
-        collisionMapRenderer.setView(cam);
-        collisionMapRenderer.render();
-        tileMapRenderer.setView(cam);
-        tileMapRenderer.render();
         sb.begin();
+        map.render(sb);
+        if (debug) map.debugRender(sb);
         Gdx.graphics.setTitle("" + Gdx.graphics.getFramesPerSecond());
         player.render(sb);
         sb.end();

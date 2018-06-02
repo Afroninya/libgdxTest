@@ -8,11 +8,16 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import config.ConfigValueProvider;
 import entities.util.CommonSprites;
 import execution.Game;
+import execution.Tile;
 import graphics.Model;
 
 import java.util.MissingResourceException;
 
 abstract public class Entity {
+
+    private final int COMBAT_MOVEMENT_SPEED = 300;
+
+    protected Game game;
 
     protected String spriteBaseName;
     protected String spriteSheet;
@@ -29,16 +34,31 @@ abstract public class Entity {
     protected double maxSpeed;
     protected double acceleration;
 
+    protected double health;
+    protected int damage;
+    protected int movement;
+
+    protected boolean phaseMovement;
+
     protected boolean isMoving;
     protected boolean isMovingUp;
     protected boolean isMovingDown;
     protected boolean isMovingRight;
     protected boolean isMovingLeft;
 
-    //0 up, 1 left, 2 down, 3 right
-    private Direction direction = Direction.DOWN;
+    protected boolean inCombat;
+    protected boolean inMovementPhase;
 
-    private enum Direction {
+    protected int combatTilesTraveledX;
+    protected int combatTilesTraveledY;
+
+    protected float destinationX;
+    protected float destinationY;
+
+    //0 up, 1 left, 2 down, 3 right
+    protected Direction direction = Direction.DOWN;
+
+    protected enum Direction {
         UP, LEFT, RIGHT, DOWN
     }
 
@@ -52,58 +72,30 @@ abstract public class Entity {
      */
     public abstract void handleMovement();
 
+    public abstract void handleCombatMovement();
+
+    public abstract void executeTurn();
+
 
     /**
      * Constructor.
      * Set attributes as specified in Subclass constructor call and initialize the Sprite.
      */
-    public Entity(String spriteSheet, String initialSprite, short acceleration, short maxSpeed, float x, float y, int width, int height) {
+    public Entity(Game game, String spriteSheet, String initialSprite, short acceleration, short maxSpeed, double health, int damage,
+                  int movement, float x, float y, int width, int height) {
+        this.game = game;
         this.x = x;
         this.y = y;
         this.isMoving = false;
         this.acceleration = acceleration;
         this.maxSpeed = maxSpeed;
+        this.health = health;
+        this.damage = damage;
+        this.movement = movement;
         this.width = width;
         this.height = height;
 
         initModel(x, y, spriteSheet, initialSprite, width, height);
-    }
-
-    /**
-     * Initialize the Sprite
-     *
-     * @param x             initial X position
-     * @param y             initial Y position
-     * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
-     * @param initialSprite the texture file name (e.g. "player_down")
-     */
-    private void initModel(float x, float y, String spriteSheet, String initialSprite, int width, int height) {
-        if (spriteSheet == null) {
-            final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String className = stackTrace[3].getClassName().toLowerCase().split("\\.")[1];
-
-            try {
-                this.spriteSheet = ConfigValueProvider.getSpritesLocation(className);
-                this.spriteBaseName = className;
-                this.defaultSprite = className + "_middle";
-            } catch (MissingResourceException e) {
-                e.printStackTrace();
-                System.out.println("No Spritesheet found for Entity " + className);
-                throw (e);
-            }
-        } else {
-            if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
-                this.defaultSprite = spriteSheet + CommonSprites.DOWN;
-            } else {
-                this.defaultSprite = initialSprite;
-            }
-            this.spriteBaseName = spriteSheet;
-            this.spriteSheet = ConfigValueProvider.getSpritesLocation(spriteSheet);
-        }
-
-        this.collisionLayer = Game.collisionLayer;
-
-        this.model = new Model(this.spriteSheet, defaultSprite, x, y, 0, width, height);
     }
 
 
@@ -113,47 +105,57 @@ abstract public class Entity {
      * @param delta the amount of time between frames in seconds.
      */
     public void update(float delta) {
-        float oldX = x;
-        float oldY = y;
         // update player movement
 
-        handleMovement();
+        if (!inCombat) {
 
-        if (isMoving) {
-            if (isMovingRight && !isMovingLeft) {
-                moveRight();
-                direction = Direction.RIGHT;
-            }
-            if (isMovingLeft && !isMovingRight) {
-                moveLeft();
-                direction = Direction.LEFT;
-            }
-            if (isMovingUp && !isMovingDown) {
-                moveUp();
-                direction = Direction.UP;
-            }
-            if (isMovingDown && !isMovingUp) {
-                moveDown();
-                direction = Direction.DOWN;
-            }
+            handleMovement();
 
-            if (speedX != 0 && (isMovingUp || isMovingDown)) {
-                inertia_x();
-            } else if (speedY != 0 && (isMovingRight || isMovingLeft)) {
-                inertia_y();
+            if (isMoving) {
+
+                if (isMovingRight && !isMovingLeft) moveRight();
+                if (isMovingLeft && !isMovingRight) moveLeft();
+                if (isMovingUp && !isMovingDown) moveUp();
+                if (isMovingDown && !isMovingUp) moveDown();
+
+                if (speedX != 0 && (isMovingUp || isMovingDown)) inertia_x();
+                else if (speedY != 0 && (isMovingRight || isMovingLeft)) inertia_y();
+
+            } else phaseOutMovement();
+
+        } else if (inMovementPhase) {
+            speedY = 0;
+            speedX = 0;
+
+            handleCombatMovement();
+
+            if (isMoving) {
+                if (isMovingUp) moveTileUp(delta);
+                if (isMovingDown) moveTileDown(delta);
+                if (isMovingRight)  moveTileRight(delta);
+                if (isMovingLeft) moveTileLeft(delta);
             }
-        } else {
-            phaseOutMovement();
         }
 
         move(delta);
 
-        if (collides()) {
-            setX(oldX);
-            setY(oldY);
-        }
-
         updateSprites();
+    }
+
+
+    // TODO: Replace damage with custom Class 'Attack' holding attack-information
+    public void handleAttack(int damage) {
+        this.health -= damage;
+    }
+
+    public void attack(Entity entity) {
+        entity.handleAttack(this.damage);
+    }
+
+    public void attack(Tile[] tiles) {
+        for (Tile tile : tiles) {
+            tile.handleAttack(this.damage);
+        }
     }
 
     /**
@@ -163,7 +165,6 @@ abstract public class Entity {
      */
     public void render(SpriteBatch sb) {
         stateTime += Gdx.graphics.getDeltaTime();
-
         // Get current frame of animation for the current stateTime
         TextureRegion tr;
         if (isMovingLeft) tr = model.animations.get("left").getKeyFrame(stateTime, true);
@@ -176,6 +177,62 @@ abstract public class Entity {
 
 
     /**
+     * Set an Entity's speed for it to move exactly one Tile up
+     * @param delta delta
+     */
+    public void moveTileUp(float delta) {
+        if (y < destinationY - COMBAT_MOVEMENT_SPEED * delta) speedY = COMBAT_MOVEMENT_SPEED;
+        else {
+            speedY = (destinationY - y) / delta;
+            isMoving = false;
+            isMovingUp = false;
+        }
+        direction = Direction.UP;
+    }
+
+    /**
+     * Set an Entity's speed for it to move exactly one Tile right
+     * @param delta delta
+     */
+    public void moveTileRight(float delta) {
+        if (x < destinationX - COMBAT_MOVEMENT_SPEED * delta) speedX = COMBAT_MOVEMENT_SPEED;
+        else {
+            speedX = (destinationX - x) / delta;
+            isMoving = false;
+            isMovingRight = false;
+        }
+        direction = Direction.RIGHT;
+    }
+
+    /**
+     * Set an Entity's speed for it to move exactly one Tile down
+     * @param delta delta
+     */
+    public void moveTileDown(float delta) {
+        if (y > destinationY + COMBAT_MOVEMENT_SPEED * delta) speedY = -COMBAT_MOVEMENT_SPEED;
+        else {
+            speedY = (destinationY - y) / delta;
+            isMoving = false;
+            isMovingDown = false;
+        }
+        direction = Direction.DOWN;
+    }
+
+    /**
+     * Set an Entity's speed for it to move exactly one Tile left
+     * @param delta delta
+     */
+    public void moveTileLeft(float delta) {
+        if (x > destinationX + COMBAT_MOVEMENT_SPEED * delta) speedX = -COMBAT_MOVEMENT_SPEED;
+        else {
+            speedX = (destinationX - x) / delta;
+            isMoving = false;
+            isMovingLeft = false;
+        }
+        direction = Direction.LEFT;
+    }
+
+    /**
      * Accelerate in positive X direction and set the Sprite accordingly
      */
     public void moveRight() {
@@ -183,7 +240,7 @@ abstract public class Entity {
         if (speedX > maxSpeed) {
             speedX = maxSpeed;
         }
-        setSprite(CommonSprites.RIGHT);
+        direction = Direction.RIGHT;
     }
 
     /**
@@ -194,7 +251,7 @@ abstract public class Entity {
         if (speedX < -maxSpeed) {
             speedX = -maxSpeed;
         }
-        setSprite(CommonSprites.LEFT);
+        direction = Direction.LEFT;
     }
 
     /**
@@ -205,7 +262,7 @@ abstract public class Entity {
         if (speedY > maxSpeed) {
             speedY = maxSpeed;
         }
-        setSprite(CommonSprites.UP);
+        direction = Direction.UP;
     }
 
     /**
@@ -216,7 +273,33 @@ abstract public class Entity {
         if (speedY < -maxSpeed) {
             speedY = -maxSpeed;
         }
-        setSprite(CommonSprites.DOWN);
+        direction = Direction.DOWN;
+    }
+
+    /**
+     * Set movement destination relative to the entity's current position.
+     * @param x X destination
+     * @param y Y destination
+     */
+    public void setDestination(float x, float y) {
+        isMoving = true;
+        destinationX = this.x + x;
+        destinationY = this.y + y;
+
+        if (y > 0) {
+            isMovingUp = true;
+            combatTilesTraveledY += 1;
+        } else if (y < 0) {
+            isMovingDown = true;
+            combatTilesTraveledY -= 1;
+        }
+        if (x > 0) {
+            isMovingRight = true;
+            combatTilesTraveledX += 1;
+        } else if (x < 0) {
+            isMovingLeft = true;
+            combatTilesTraveledX -= 1;
+        }
     }
 
 
@@ -225,31 +308,32 @@ abstract public class Entity {
      *
      * @return true if a collision occured
      */
-    public boolean collides() {
+    public boolean collides(int x, int y) {
         //Check For Collision
-        boolean collisionWithMap = isCellBLocked(x, y);
-
-        //React to Collision
-        if (collisionWithMap) {
-            Gdx.app.debug("Collision", "Player collides.");
+        // bottom left corner
+        Tile tile = game.map.getTilePixel(x, y);
+        // top right corner
+        Tile tile2 = game.map.getTilePixel((int) (x + width), (int) (y + width));
+        // top left corner
+        Tile tile3 = game.map.getTilePixel(x, (int) (y + width));
+        // bottom right corner
+        Tile tile4 = game.map.getTilePixel((int) (x + width), y);
+        try {
+            boolean collisionWithMap = (tile == null) || (!tile.isPassable() || !tile3.isPassable() || !tile2.isPassable() || !tile4.isPassable());
+            //React to Collision
+            if (collisionWithMap) {
+                if (speedX != 0 && speedY != 0) {
+                    if ((!tile.isPassable() && !tile3.isPassable()) || (!tile2.isPassable() && !tile4.isPassable()))
+                        speedX = 0;
+                    if ((!tile.isPassable() && !tile4.isPassable()) || (!tile2.isPassable() && !tile3.isPassable()))
+                        speedY = 0;
+                }
+            }
+            return collisionWithMap;
+        } catch (NullPointerException e) {
+            //in case any of the tiles is outside of the map
+            return true;
         }
-        return collisionWithMap;
-    }
-
-    /**
-     * Check if the specified space is blocked by terrain.
-     *
-     * @param x X location
-     * @param y Y location
-     * @return true if space is blocked
-     */
-    public boolean isCellBLocked(float x, float y) {
-        TiledMapTileLayer.Cell cell = collisionLayer.getCell(
-                (int) (x / collisionLayer.getTileWidth()),
-                (int) (y / collisionLayer.getTileHeight()));
-
-        return cell != null && cell.getTile() != null
-                && cell.getTile().getProperties().containsKey("blocked");
     }
 
     /**
@@ -292,21 +376,21 @@ abstract public class Entity {
     }
 
     /**
-     * Move by a specified amount
+     * Move with specified speed
      *
-     * @param x     X amount
-     * @param y     Y amount
+     * @param speedX     X speed
+     * @param speedY     Y speed
      * @param delta frame based movement scaling
      */
-    public void move(double x, double y, float delta) {
-        double hypo = Math.hypot(x, y);
-        double angle = (x == 0 && y == 0) ? 0 : Math.round(Math.toDegrees(Math.asin(Math.abs(x) / hypo)));
+    public void move(double speedX, double speedY, float delta) {
+        double hypo = Math.hypot(speedX, speedY);
+        double angle = (speedX == 0 && speedY == 0) ? 0 : Math.round(Math.toDegrees(Math.asin(Math.abs(speedX) / hypo)));
 
         double x_speedMod = angle / 90;
         double y_speedMod = 1 - (angle / 90);
 
-        translateX((float) (x * x_speedMod) * delta);
-        translateY((float) (y * y_speedMod) * delta);
+        translateX((float) (speedX * x_speedMod) * delta);
+        translateY((float) (speedY * y_speedMod) * delta);
     }
 
     /**
@@ -315,6 +399,7 @@ abstract public class Entity {
      * @param x X amount
      */
     public void translateX(float x) {
+        if (collides((int) (this.x + x), (int) y)) return;
         this.x += x;
         this.model.setX(this.x);
     }
@@ -325,8 +410,14 @@ abstract public class Entity {
      * @param y Y amount
      */
     public void translateY(float y) {
+        if (collides((int) x, (int) (this.y + y))) return;
         this.y += y;
         this.model.setY(this.y);
+    }
+
+    public void setPosition(float x, float y) {
+        setX(x);
+        setY(y);
     }
 
     /**
@@ -337,12 +428,53 @@ abstract public class Entity {
     }
 
     /**
+     * Initialize the Sprite
+     *
+     * @param x             initial X position
+     * @param y             initial Y position
+     * @param spriteSheet   base name of the spritesheet file (e.g. "player.atlas")
+     * @param initialSprite the texture file name (e.g. "player_down")
+     */
+    private void initModel(float x, float y, String spriteSheet, String initialSprite, int width, int height) {
+        if (spriteSheet == null) {
+            final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            String className = stackTrace[3].getClassName().toLowerCase().split("\\.")[1];
+
+            try {
+                this.spriteSheet = ConfigValueProvider.getSpritesLocation(className);
+                this.spriteBaseName = className;
+                this.defaultSprite = className + "_middle";
+            } catch (MissingResourceException e) {
+                e.printStackTrace();
+                System.out.println("No Spritesheet found for Entity " + className);
+                throw (e);
+            }
+        } else {
+            if (initialSprite == null || !initialSprite.contains(spriteSheet)) {
+                this.defaultSprite = spriteSheet + CommonSprites.DOWN;
+            } else {
+                this.defaultSprite = initialSprite;
+            }
+            this.spriteBaseName = spriteSheet;
+            this.spriteSheet = ConfigValueProvider.getSpritesLocation(spriteSheet);
+        }
+
+        this.collisionLayer = Game.collisionLayer;
+
+        this.model = new Model(this.spriteSheet, defaultSprite, x, y, 0, width, height);
+    }
+
+    /**
      * Change the currently displayed sprite.
      *
      * @param sprite the suffix of the new sprite (e.g. "down")
      */
     public void setSprite(CommonSprites sprite) {
         this.model.setSprite(this.spriteBaseName + sprite.toString(), this.x, this.y);
+    }
+
+    public int getMovement() {
+        return movement;
     }
 
     public float getHeight() {
@@ -381,6 +513,14 @@ abstract public class Entity {
     public void setY(float y) {
         this.y = y;
         this.model.setY(y);
+    }
+
+    public void setInCombat(boolean inCombat) {
+        this.inCombat = inCombat;
+    }
+
+    public void setInMovementPhase(boolean inMovementPhase) {
+        this.inMovementPhase = inMovementPhase;
     }
 
     public void setCollisionLayer(TiledMapTileLayer collisionLayer) {

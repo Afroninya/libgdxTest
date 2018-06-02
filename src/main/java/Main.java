@@ -8,8 +8,8 @@ public class Main {
         Config.getConfig();
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         cfg.title = "test";
-        cfg.width = Config.V_WIDTH;
-        cfg.height = Config.V_HEIGHT;
+        cfg.width = Config.VIEWPORT_WIDTH;
+        cfg.height = Config.VIEWPORT_HEIGHT;
         cfg.forceExit = false;
         //test
         new LwjglApplication(new Game(), cfg);
